@@ -19,7 +19,13 @@ static const BHGLTextureVertex RZQuad[] = {
     {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}}
 };
 
-@interface ViewController () <GLKViewDelegate>
+static const int depth  = 70;
+// 2 for 2 triangles and 3 for 3 vertexes per triangle.
+#define depthSize   (depth)*(depth)*2*3
+
+@interface ViewController () <GLKViewDelegate> {
+    BHGLTextureVertex _textureVertex[depthSize];
+}
 
 @property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (weak, nonatomic) IBOutlet GLKView *glView;
@@ -33,6 +39,7 @@ static const BHGLTextureVertex RZQuad[] = {
 @property (strong, nonatomic) RZViewTexture *texture;
 
 @property (assign, nonatomic) CGPoint lastPanPoint;
+
 
 @end
 
@@ -57,7 +64,7 @@ static const BHGLTextureVertex RZQuad[] = {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
         [self.contentView.subviews[0] setAlpha:0.0f];
     } completion:nil];
@@ -66,6 +73,8 @@ static const BHGLTextureVertex RZQuad[] = {
         [(UIView *)self.contentView.subviews[1] setTransform:CGAffineTransformMakeTranslation(200.0f, 100.0f)];
     } completion:nil];
     
+    [self setupTextureVertex];
+
     [self setupGL];
 }
 
@@ -103,6 +112,27 @@ static const BHGLTextureVertex RZQuad[] = {
     [self teardownDisplayLink];
 }
 
+- (void)setupTextureVertex {
+    float glIncrementer = 2.0/depth;
+    float imgIncrmementer = 1.0f/depth;
+    int counter = 0;
+    for (int y = 0; y < depth; y++) {
+        for (int x = 0; x < depth; x++) {
+            BHGLTextureVertex topLeftVertex = {{ -1.0f + glIncrementer * x, 1.0f - glIncrementer * y, 0.0f}, { imgIncrmementer * x, imgIncrmementer * y }};
+            BHGLTextureVertex bottomLeftVertex = {{ -1.0f + glIncrementer * x, 1.0f - glIncrementer * (y+1), 0.0f}, { imgIncrmementer * x, imgIncrmementer * (y+1) }};
+            BHGLTextureVertex topRightVertex = {{ -1.0f + glIncrementer * (x+1), 1.0f - glIncrementer * y, 0.0f}, { imgIncrmementer * (x+1), imgIncrmementer * y }};
+            BHGLTextureVertex bottomRightVertex = {{ -1.0f + glIncrementer * (x+1), 1.0f - glIncrementer * (y+1), 0.0f}, { imgIncrmementer * (x+1), imgIncrmementer * (y+1) }};
+            _textureVertex[counter++] = topLeftVertex;
+            _textureVertex[counter++] = bottomLeftVertex;
+            _textureVertex[counter++] = topRightVertex;
+
+            _textureVertex[counter++] = bottomLeftVertex;
+            _textureVertex[counter++] = topRightVertex;
+            _textureVertex[counter++] = bottomRightVertex;
+        }
+    }
+}
+
 - (void)setupGL
 {
     self.glView.context = [[self class] bestContext];
@@ -120,8 +150,8 @@ static const BHGLTextureVertex RZQuad[] = {
     [self createShaders];
     
     BHGLVertexType vType = BHGLVertexTypeCreateWithType(BHGL_TEXTURE_VERTEX);
-    BHGLMesh *mesh = [[BHGLMesh alloc] initWithVertexData:RZQuad vertexDataSize:sizeof(RZQuad) vertexType:&vType];
-    mesh.primitiveMode = GL_TRIANGLE_STRIP;
+    BHGLMesh *mesh = [[BHGLMesh alloc] initWithVertexData:_textureVertex vertexDataSize:sizeof(_textureVertex) vertexType:&vType];
+//    mesh.primitiveMode = GL_TRIANGLES;
     mesh.cullFaces = GL_NONE;
     BHGLVertexTypeFree(vType);
     
@@ -133,7 +163,7 @@ static const BHGLTextureVertex RZQuad[] = {
     rotate.repeats = YES;
     
 //    [model runAnimation:rotate];
-    
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
@@ -186,9 +216,11 @@ static const BHGLTextureVertex RZQuad[] = {
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     glBindTexture(GL_TEXTURE_2D, self.texture.name);
-    
+
+    glUniform1f([self.scene.program uniformPosition:@"u_timeOffset"] , CACurrentMediaTime());
+
     [self.scene render];
     
     glBindTexture(GL_TEXTURE_2D, 0);
