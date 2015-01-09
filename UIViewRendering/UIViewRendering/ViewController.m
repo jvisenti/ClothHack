@@ -183,7 +183,7 @@ static const int depth  = 100;
 
 - (void)createShaders
 {
-    BHGLProgram *program = [[BHGLProgram alloc] initWithVertexShaderNamed:@"vertex.vsh" fragmentShaderNamed:@"pointLight.fsh"];
+    BHGLProgram *program = [[BHGLProgram alloc] initWithVertexShaderNamed:@"vertex.vsh" fragmentShaderNamed:@"fragment.fsh"];
     
     program.mvpUniformName = kBHGLMVPUniformName;
     program.mvUniformName = kBHGLMVUniformName;
@@ -250,6 +250,11 @@ static const int depth  = 100;
     glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, discards);
     
     glFlush();
+}
+
+- (IBAction)switchChanged:(UISwitch *)sender
+{
+    glUniform1i([self.scene.program uniformPosition:@"u_Emboss"], !sender.isOn);
 }
 
 @end

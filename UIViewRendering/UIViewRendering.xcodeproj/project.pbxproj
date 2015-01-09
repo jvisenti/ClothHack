@@ -29,11 +29,10 @@
 		D41D864E1A5F7420005C22F9 /* BHGLProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D863A1A5F7420005C22F9 /* BHGLProgram.m */; };
 		D41D864F1A5F7420005C22F9 /* BHGLScene.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D863D1A5F7420005C22F9 /* BHGLScene.m */; };
 		D41D86511A5F7420005C22F9 /* BHGLTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86411A5F7420005C22F9 /* BHGLTexture.m */; };
-		D41D86561A5F7D34005C22F9 /* fragment.fsh in Resources */ = {isa = PBXBuildFile; fileRef = D41D86541A5F7D34005C22F9 /* fragment.fsh */; };
 		D41D86571A5F7D34005C22F9 /* vertex.vsh in Resources */ = {isa = PBXBuildFile; fileRef = D41D86551A5F7D34005C22F9 /* vertex.vsh */; };
 		D48BFBB11A601CCD002A26F0 /* test.png in Resources */ = {isa = PBXBuildFile; fileRef = D48BFBB01A601CCD002A26F0 /* test.png */; };
 		D48BFBB41A60251A002A26F0 /* RZViewTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = D48BFBB31A60251A002A26F0 /* RZViewTexture.m */; };
-		D48BFBB71A60540D002A26F0 /* pointLight.fsh in Resources */ = {isa = PBXBuildFile; fileRef = D48BFBB61A60540D002A26F0 /* pointLight.fsh */; };
+		D48BFBB71A60540D002A26F0 /* fragment.fsh in Resources */ = {isa = PBXBuildFile; fileRef = D48BFBB61A60540D002A26F0 /* fragment.fsh */; };
 		D48BFBBC1A605821002A26F0 /* RZModelNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D48BFBBB1A605821002A26F0 /* RZModelNode.m */; };
 /* End PBXBuildFile section */
 
@@ -94,12 +93,11 @@
 		D41D86401A5F7420005C22F9 /* BHGLTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLTexture.h; path = BHGL/BHGLTexture.h; sourceTree = "<group>"; };
 		D41D86411A5F7420005C22F9 /* BHGLTexture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLTexture.m; path = BHGL/BHGLTexture.m; sourceTree = "<group>"; };
 		D41D86421A5F7420005C22F9 /* BHGLTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLTypes.h; path = BHGL/BHGLTypes.h; sourceTree = "<group>"; };
-		D41D86541A5F7D34005C22F9 /* fragment.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = fragment.fsh; sourceTree = "<group>"; };
 		D41D86551A5F7D34005C22F9 /* vertex.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vertex.vsh; sourceTree = "<group>"; };
 		D48BFBB01A601CCD002A26F0 /* test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test.png; sourceTree = "<group>"; };
 		D48BFBB21A60251A002A26F0 /* RZViewTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RZViewTexture.h; sourceTree = "<group>"; };
 		D48BFBB31A60251A002A26F0 /* RZViewTexture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RZViewTexture.m; sourceTree = "<group>"; };
-		D48BFBB61A60540D002A26F0 /* pointLight.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = pointLight.fsh; sourceTree = "<group>"; };
+		D48BFBB61A60540D002A26F0 /* fragment.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = fragment.fsh; sourceTree = "<group>"; };
 		D48BFBBA1A605821002A26F0 /* RZModelNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RZModelNode.h; sourceTree = "<group>"; };
 		D48BFBBB1A605821002A26F0 /* RZModelNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RZModelNode.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -153,9 +151,8 @@
 				D48BFBB31A60251A002A26F0 /* RZViewTexture.m */,
 				D48BFBBA1A605821002A26F0 /* RZModelNode.h */,
 				D48BFBBB1A605821002A26F0 /* RZModelNode.m */,
-				D41D86541A5F7D34005C22F9 /* fragment.fsh */,
 				D41D86551A5F7D34005C22F9 /* vertex.vsh */,
-				D48BFBB61A60540D002A26F0 /* pointLight.fsh */,
+				D48BFBB61A60540D002A26F0 /* fragment.fsh */,
 				D48BFBB01A601CCD002A26F0 /* test.png */,
 				D41D859E1A5F703E005C22F9 /* Main.storyboard */,
 				D41D85A31A5F703E005C22F9 /* LaunchScreen.xib */,
@@ -312,8 +309,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D41D85A01A5F703E005C22F9 /* Main.storyboard in Resources */,
-				D41D86561A5F7D34005C22F9 /* fragment.fsh in Resources */,
-				D48BFBB71A60540D002A26F0 /* pointLight.fsh in Resources */,
+				D48BFBB71A60540D002A26F0 /* fragment.fsh in Resources */,
 				D41D86571A5F7D34005C22F9 /* vertex.vsh in Resources */,
 				D41D85A51A5F703E005C22F9 /* LaunchScreen.xib in Resources */,
 				D41D85A21A5F703E005C22F9 /* Images.xcassets in Resources */,
