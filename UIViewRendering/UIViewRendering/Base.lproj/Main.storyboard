@@ -54,6 +54,7 @@
                             </glkView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="qO1-yE-wxw" secondAttribute="trailing" id="Fp8-xb-Ckl"/>
                             <constraint firstItem="FJq-OF-DXC" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="U2a-GD-8Lb"/>
@@ -64,6 +65,9 @@
                             <constraint firstItem="qO1-yE-wxw" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="yUl-eF-N7G"/>
                             <constraint firstAttribute="trailing" secondItem="FJq-OF-DXC" secondAttribute="trailing" id="zxW-U3-LMe"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="pAh-ja-bUm" appends="YES" id="4Pr-ku-7Rd"/>
+                        </connections>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
@@ -73,6 +77,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+                <panGestureRecognizer delaysTouchesEnded="NO" minimumNumberOfTouches="1" maximumNumberOfTouches="1" id="pAh-ja-bUm">
+                    <connections>
+                        <action selector="pan:" destination="vXZ-lx-hvc" id="O9l-hM-unt"/>
+                    </connections>
+                </panGestureRecognizer>
             </objects>
         </scene>
     </scenes>

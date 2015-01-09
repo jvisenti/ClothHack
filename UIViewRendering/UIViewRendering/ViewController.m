@@ -32,6 +32,8 @@ static const BHGLTextureVertex RZQuad[] = {
 @property (strong, nonatomic) BHGLNode *rootNode;
 @property (strong, nonatomic) RZViewTexture *texture;
 
+@property (assign, nonatomic) CGPoint lastPanPoint;
+
 @end
 
 @implementation ViewController
@@ -60,8 +62,8 @@ static const BHGLTextureVertex RZQuad[] = {
         [self.contentView.subviews[0] setAlpha:0.0f];
     } completion:nil];
     
-    [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
-        [(UIView *)self.contentView.subviews[1] setCenter:CGPointMake(250.0f, 300.0f)];
+    [UIView animateWithDuration:2.0 delay:0.0 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
+        [(UIView *)self.contentView.subviews[1] setTransform:CGAffineTransformMakeTranslation(200.0f, 100.0f)];
     } completion:nil];
     
     [self setupGL];
@@ -195,6 +197,27 @@ static const BHGLTextureVertex RZQuad[] = {
     glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, discards);
     
     glFlush();
+}
+
+#pragma mark - touch handling
+
+- (IBAction)pan:(UIPanGestureRecognizer *)panGr
+{
+    CGPoint p = [panGr locationInView:self.view];
+    
+    if ( panGr.state == UIGestureRecognizerStateChanged ) {
+        
+        CGFloat dx = (p.x - self.lastPanPoint.x) / CGRectGetWidth(self.view.bounds);
+        CGFloat dy = (p.y - self.lastPanPoint.y) / CGRectGetHeight(self.view.bounds);
+        
+        GLKQuaternion xRotation = GLKQuaternionMakeWithAngleAndAxis(M_PI * dy, 1.0f, 0.0f, 0.0f);
+        GLKQuaternion yRotation = GLKQuaternionMakeWithAngleAndAxis(M_PI * dx, 0.0f, 1.0f, 0.0f);
+        
+        [self.rootNode runAnimation:[BHGLBasicAnimation rotateBy:GLKQuaternionMultiply(xRotation, yRotation)]];
+        
+    }
+    
+    self.lastPanPoint = p;
 }
 
 @end
