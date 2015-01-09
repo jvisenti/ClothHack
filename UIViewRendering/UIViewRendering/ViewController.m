@@ -11,13 +11,7 @@
 #import "ViewController.h"
 #import "BHGL.h"
 #import "RZViewTexture.h"
-
-static const BHGLTextureVertex RZQuad[] = {
-    {{-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-    {{-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
-    {{1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-    {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}}
-};
+#import "RZModelNode.h"
 
 static const int depth  = 100;
 // 2 for 2 triangles and 3 for 3 vertexes per triangle.
@@ -28,6 +22,7 @@ static const int depth  = 100;
 }
 
 @property (weak, nonatomic) IBOutlet UIView *contentView;
+@property (weak, nonatomic) IBOutlet UISlider *slider;
 @property (weak, nonatomic) IBOutlet GLKView *glView;
 
 @property (strong, nonatomic) CADisplayLink *displayLink;
@@ -69,8 +64,8 @@ static const int depth  = 100;
         [self.contentView.subviews[1] setAlpha:0.0f];
     } completion:nil];
     
-    [UIView animateWithDuration:2.0 delay:0.0 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
-        [(UIView *)self.contentView.subviews[2] setTransform:CGAffineTransformMakeTranslation(200.0f, 100.0f)];
+    [UIView animateWithDuration:3.0 delay:0.0 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse | UIViewAnimationOptionAllowUserInteraction animations:^{
+        [(UIView *)self.contentView.subviews[2] setTransform:CGAffineTransformMakeTranslation(200.0f, 0.0f)];
     } completion:nil];
     
     [self setupTextureVertex];
@@ -147,6 +142,7 @@ static const int depth  = 100;
     self.rootNode = [[BHGLNode alloc] init];
     [self.scene addChild:self.rootNode];
     
+    self.rootNode.rotation = GLKQuaternionMake(-0.133518726, 0.259643972, 0.0340433009, 0.955821096);
     [self createShaders];
     
     BHGLVertexType vType = BHGLVertexTypeCreateWithType(BHGL_TEXTURE_VERTEX);
@@ -155,9 +151,27 @@ static const int depth  = 100;
     mesh.cullFaces = GL_NONE;
     BHGLVertexTypeFree(vType);
     
-    BHGLModelNode *model = [[BHGLModelNode alloc] initWithMesh:mesh material:nil];
+    RZModelNode *model = [[RZModelNode alloc] initWithMesh:mesh material:nil];
+    model.material.ambientColor = BHGLColorWhite;
+    model.material.diffuseColor = BHGLColorWhite;
+    model.material.specularColor = BHGLColorMake(0.6f, 0.6f, 0.6f, 1.0f);
+    model.material.shininess = 10.0f;
     
     [self.rootNode addChild:model];
+    
+    BHGLLight *light = [[BHGLLight alloc] init];
+    light.type = BHGLLightTypePoint;
+    light.ambientColor = BHGLColorMake(0.8f, 0.8f, 0.8f, 1.0f);
+    light.diffuseColor = BHGLColorWhite;
+    light.specularColor = BHGLColorWhite;
+    light.position = GLKVector3Make(0.0f, 1.0f, 2.0f);
+    light.constantAttenuation = 1.0f;
+    light.linearAttenuation = 0.02f;
+    light.quadraticAttenuation = 0.017f;
+    
+    [self.scene addLight:light];
+    
+    self.scene.lightUniform = @"u_Lights";
     
     BHGLAnimation *rotate = [BHGLBasicAnimation rotateBy:GLKQuaternionMakeWithAngleAndAxis(M_PI, 1.0f, 0.0f, 0.0f) withDuration:2.0f];
     rotate.repeats = YES;
@@ -169,9 +183,11 @@ static const int depth  = 100;
 
 - (void)createShaders
 {
-    BHGLProgram *program = [[BHGLProgram alloc] initWithVertexShaderNamed:@"vertex.vsh" fragmentShaderNamed:@"fragment.fsh"];
+    BHGLProgram *program = [[BHGLProgram alloc] initWithVertexShaderNamed:@"vertex.vsh" fragmentShaderNamed:@"pointLight.fsh"];
     
     program.mvpUniformName = kBHGLMVPUniformName;
+    program.mvUniformName = kBHGLMVUniformName;
+    program.normalMatrixUniformName = kBHGLNormalMatrixUniformName;
     
     [program setVertexAttribute:BHGLVertexAttribPosition forName:kBHGLPositionAttributeName];
     [program setVertexAttribute:BHGLVertexAttribTexCoord0 forName:kBHGLTexCoord0AttributeName];
@@ -217,12 +233,14 @@ static const int depth  = 100;
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, self.texture.name);
 
+    glUniform1f([self.scene.program uniformPosition:@"u_anchor"], -1.0f);
     glUniform1f([self.scene.program uniformPosition:@"u_timeOffset"] , CACurrentMediaTime());
-    glUniform1f([self.scene.program uniformPosition:@"u_velocity"] , 0.1f);
-    glUniform1f([self.scene.program uniformPosition:@"u_waveNumber"] , 10.0f);
-    glUniform1f([self.scene.program uniformPosition:@"u_amplitude"] , 0.2f);
+    glUniform1f([self.scene.program uniformPosition:@"u_velocity"] , 0.4f);
+    glUniform1f([self.scene.program uniformPosition:@"u_waveNumber"] , 8.0f);
+    glUniform1f([self.scene.program uniformPosition:@"u_amplitude"] , 0.1f + 0.3f * self.slider.value);
 
     [self.scene render];
     
@@ -232,27 +250,6 @@ static const int depth  = 100;
     glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, discards);
     
     glFlush();
-}
-
-#pragma mark - touch handling
-
-- (IBAction)pan:(UIPanGestureRecognizer *)panGr
-{
-    CGPoint p = [panGr locationInView:self.view];
-    
-    if ( panGr.state == UIGestureRecognizerStateChanged ) {
-        
-        CGFloat dx = (p.x - self.lastPanPoint.x) / CGRectGetWidth(self.view.bounds);
-        CGFloat dy = (p.y - self.lastPanPoint.y) / CGRectGetHeight(self.view.bounds);
-        
-        GLKQuaternion xRotation = GLKQuaternionMakeWithAngleAndAxis(M_PI * dy, 1.0f, 0.0f, 0.0f);
-        GLKQuaternion yRotation = GLKQuaternionMakeWithAngleAndAxis(M_PI * dx, 0.0f, 1.0f, 0.0f);
-        
-        [self.rootNode runAnimation:[BHGLBasicAnimation rotateBy:GLKQuaternionMultiply(xRotation, yRotation)]];
-        
-    }
-    
-    self.lastPanPoint = p;
 }
 
 @end
