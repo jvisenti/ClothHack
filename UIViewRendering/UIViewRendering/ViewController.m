@@ -19,7 +19,7 @@ static const BHGLTextureVertex RZQuad[] = {
     {{1.0f, -1.0f, 0.0f}, {1.0f, 1.0f}}
 };
 
-static const int depth  = 70;
+static const int depth  = 100;
 // 2 for 2 triangles and 3 for 3 vertexes per triangle.
 #define depthSize   (depth)*(depth)*2*3
 
@@ -66,11 +66,11 @@ static const int depth  = 70;
     [super viewDidLoad];
 
     [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
-        [self.contentView.subviews[0] setAlpha:0.0f];
+        [self.contentView.subviews[1] setAlpha:0.0f];
     } completion:nil];
     
     [UIView animateWithDuration:2.0 delay:0.0 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
-        [(UIView *)self.contentView.subviews[1] setTransform:CGAffineTransformMakeTranslation(200.0f, 100.0f)];
+        [(UIView *)self.contentView.subviews[2] setTransform:CGAffineTransformMakeTranslation(200.0f, 100.0f)];
     } completion:nil];
     
     [self setupTextureVertex];
@@ -220,6 +220,9 @@ static const int depth  = 70;
     glBindTexture(GL_TEXTURE_2D, self.texture.name);
 
     glUniform1f([self.scene.program uniformPosition:@"u_timeOffset"] , CACurrentMediaTime());
+    glUniform1f([self.scene.program uniformPosition:@"u_velocity"] , 0.1f);
+    glUniform1f([self.scene.program uniformPosition:@"u_waveNumber"] , 10.0f);
+    glUniform1f([self.scene.program uniformPosition:@"u_amplitude"] , 0.2f);
 
     [self.scene render];
     
