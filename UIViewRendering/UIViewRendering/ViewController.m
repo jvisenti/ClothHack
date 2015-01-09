@@ -10,6 +10,7 @@
 
 #import "ViewController.h"
 #import "BHGL.h"
+#import "RZViewTexture.h"
 
 static const BHGLTextureVertex RZQuad[] = {
     {{-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
@@ -29,6 +30,7 @@ static const BHGLTextureVertex RZQuad[] = {
 
 @property (strong, nonatomic) BHGLScene *scene;
 @property (strong, nonatomic) BHGLNode *rootNode;
+@property (strong, nonatomic) RZViewTexture *texture;
 
 @end
 
@@ -53,7 +55,15 @@ static const BHGLTextureVertex RZQuad[] = {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-        
+    
+    [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
+        [self.contentView.subviews[0] setAlpha:0.0f];
+    } completion:nil];
+    
+    [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse animations:^{
+        [(UIView *)self.contentView.subviews[1] setCenter:CGPointMake(250.0f, 300.0f)];
+    } completion:nil];
+    
     [self setupGL];
 }
 
@@ -70,6 +80,10 @@ static const BHGLTextureVertex RZQuad[] = {
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
+    
+    if ( self.texture == nil ) {
+        self.texture = [[RZViewTexture alloc] initWithWidth:CGRectGetWidth(self.view.bounds) height:CGRectGetHeight(self.view.bounds)];
+    }
     
     CGFloat aspectRatio = (self.view.bounds.size.width / self.view.bounds.size.height);
     
@@ -110,7 +124,6 @@ static const BHGLTextureVertex RZQuad[] = {
     BHGLVertexTypeFree(vType);
     
     BHGLModelNode *model = [[BHGLModelNode alloc] initWithMesh:mesh material:nil];
-    model.material.texture = [[BHGLTexture alloc] initWithImageNamed:@"test" options:nil error:nil];
     
     [self.rootNode addChild:model];
     
@@ -165,22 +178,23 @@ static const BHGLTextureVertex RZQuad[] = {
 {
     [self.scene updateRecursive:self.timeSinceLastUpdate];
     
-    UIGraphicsBeginImageContextWithOptions(self.contentView.bounds.size, NO, 0.0f);
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-    
-    [self.contentView.layer drawInContext:ctx];
-    
-    __unused void *data = CGBitmapContextGetData(ctx);
-    __unused UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    
-    UIGraphicsEndImageContext();
+    [self.texture updateWithView:self.contentView];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    glBindTexture(GL_TEXTURE_2D, self.texture.name);
+    
     [self.scene render];
+    
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    const GLenum discards[]  = {GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT};
+    glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, discards);
+    
+    glFlush();
 }
 
 @end
