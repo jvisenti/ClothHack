@@ -13,8 +13,10 @@
 
 @property (assign, nonatomic, readonly) GLuint name;
 @property (assign, nonatomic, readonly) CGSize size;
+@property (assign, nonatomic, readonly) CGFloat scale;
 
-- (instancetype)initWithWidth:(GLsizei)width height:(GLsizei)height;
+- (instancetype)initWithSize:(CGSize)size;
+- (instancetype)initWithSize:(CGSize)size scale:(CGFloat)scale;
 
 - (void)updateWithView:(UIView *)view;
 

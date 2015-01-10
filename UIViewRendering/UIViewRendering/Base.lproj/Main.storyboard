@@ -69,11 +69,11 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="qO1-yE-wxw" secondAttribute="trailing" id="Fp8-xb-Ckl"/>
+                            <constraint firstItem="qO1-yE-wxw" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="IZS-1O-S5v"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="FJq-OF-DXC" secondAttribute="bottom" id="Rpy-Ky-WTr"/>
                             <constraint firstItem="FJq-OF-DXC" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="U2a-GD-8Lb"/>
-                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="qO1-yE-wxw" secondAttribute="bottom" id="UNh-ky-T8S"/>
-                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="FJq-OF-DXC" secondAttribute="bottom" id="ctl-1i-fom"/>
                             <constraint firstItem="FJq-OF-DXC" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" id="hXS-mW-BYJ"/>
-                            <constraint firstItem="qO1-yE-wxw" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="pju-Zr-TNY"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="qO1-yE-wxw" secondAttribute="bottom" id="urs-4D-A92"/>
                             <constraint firstItem="qO1-yE-wxw" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="yUl-eF-N7G"/>
                             <constraint firstAttribute="trailing" secondItem="FJq-OF-DXC" secondAttribute="trailing" id="zxW-U3-LMe"/>
                         </constraints>

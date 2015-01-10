@@ -13,7 +13,7 @@
 #import "RZViewTexture.h"
 #import "RZModelNode.h"
 
-static const int depth  = 100;
+static const int depth  = 50;
 // 2 for 2 triangles and 3 for 3 vertexes per triangle.
 #define depthSize   (depth)*(depth)*2*3
 
@@ -88,7 +88,7 @@ static const int depth  = 100;
     [super viewDidLayoutSubviews];
     
     if ( self.texture == nil ) {
-        self.texture = [[RZViewTexture alloc] initWithWidth:CGRectGetWidth(self.view.bounds) height:CGRectGetHeight(self.view.bounds)];
+        self.texture = [[RZViewTexture alloc] initWithSize:self.contentView.bounds.size];
     }
     
     CGFloat aspectRatio = (self.view.bounds.size.width / self.view.bounds.size.height);
@@ -194,6 +194,11 @@ static const int depth  = 100;
     
     if ( [program link] ) {
         self.scene.program = program;
+        
+        [self.scene.program use];
+        glUniform1f([self.scene.program uniformPosition:@"u_anchor"], -1.0f);
+        glUniform1f([self.scene.program uniformPosition:@"u_velocity"] , 0.4f);
+        glUniform1f([self.scene.program uniformPosition:@"u_waveNumber"] , 8.0f);
     }
 }
 
@@ -233,15 +238,11 @@ static const int depth  = 100;
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, self.texture.name);
 
-    glUniform1f([self.scene.program uniformPosition:@"u_anchor"], -1.0f);
     glUniform1f([self.scene.program uniformPosition:@"u_timeOffset"] , CACurrentMediaTime());
-    glUniform1f([self.scene.program uniformPosition:@"u_velocity"] , 0.4f);
-    glUniform1f([self.scene.program uniformPosition:@"u_waveNumber"] , 8.0f);
     glUniform1f([self.scene.program uniformPosition:@"u_amplitude"] , 0.1f + 0.3f * self.slider.value);
-
+    
     [self.scene render];
     
     glBindTexture(GL_TEXTURE_2D, 0);
