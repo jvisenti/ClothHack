@@ -11,6 +11,7 @@
 #import "ViewController.h"
 #import "BHGL.h"
 #import "RZViewTexture.h"
+#import "RZRenderLoop.h"
 
 static const int depth  = 40;
 // 2 for 2 triangles and 3 for 3 vertexes per triangle.
@@ -24,9 +25,7 @@ static const int depth  = 40;
 @property (weak, nonatomic) IBOutlet UISlider *slider;
 @property (weak, nonatomic) IBOutlet GLKView *glView;
 
-@property (strong, nonatomic) CADisplayLink *displayLink;
-@property (assign, nonatomic) CFTimeInterval lastTimestamp;
-@property (assign, nonatomic, readwrite) CFTimeInterval timeSinceLastUpdate;
+@property (strong, nonatomic) RZRenderLoop *renderLoop;
 
 @property (strong, nonatomic) BHGLScene *scene;
 @property (strong, nonatomic) BHGLNode *rootNode;
@@ -76,10 +75,7 @@ static const int depth  = 40;
 {
     [super viewWillAppear:animated];
     
-    [self update];
-    [self.glView display];
-    
-    [self setupDisplayLink];
+    [self setupRenderLoop];
 }
 
 - (void)viewDidLayoutSubviews
@@ -103,7 +99,7 @@ static const int depth  = 40;
 {
     [super viewDidDisappear:animated];
     
-    [self teardownDisplayLink];
+    self.renderLoop = nil;
 }
 
 - (void)setupTextureVertex {
@@ -190,34 +186,19 @@ static const int depth  = 40;
     }
 }
 
-- (void)setupDisplayLink
+- (void)setupRenderLoop
 {
-    self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(render:)];
-    self.lastTimestamp = CACurrentMediaTime();
-    self.timeSinceLastUpdate = 0.0f;
+    self.renderLoop = [RZRenderLoop renderLoop];
     
-    [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    [self.renderLoop setUpdateTarget:self action:@selector(update:)];
+    [self.renderLoop setRenderTarget:self.glView action:@selector(display)];
+    
+    [self.renderLoop run];
 }
 
-- (void)teardownDisplayLink
+- (void)update:(CFTimeInterval)dt
 {
-    [self.displayLink invalidate];
-    self.displayLink = nil;
-}
-
-- (void)render:(CADisplayLink *)displayLink
-{
-    self.timeSinceLastUpdate = displayLink.timestamp - self.lastTimestamp;
-    
-    [self update];
-    
-    [self.glView display];
-    self.lastTimestamp = displayLink.timestamp;
-}
-
-- (void)update
-{
-    [self.scene updateRecursive:self.timeSinceLastUpdate];
+    [self.scene updateRecursive:dt];
     
     [self.texture updateWithView:self.contentView synchronous:NO];
 }

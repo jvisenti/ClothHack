@@ -1,13 +1,12 @@
 //
 //  RZViewTexture.m
-//  UIViewRendering
 //
 //  Created by Rob Visentin on 1/9/15.
 //  Copyright (c) 2015 Raizlabs. All rights reserved.
 //
 
+@import OpenGLES.ES2;
 #import "RZViewTexture.h"
-#import <OpenGLES/ES2/gl.h>
 
 @interface RZViewTexture () {
     GLsizei _texWidth;
