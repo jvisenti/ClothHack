@@ -1,5 +1,3 @@
-#version 300 es
-
 uniform mat4 u_MVPMatrix;
 uniform mat4 u_MVMatrix;
 uniform mat3 u_NormalMatrix;
@@ -13,13 +11,13 @@ uniform float u_amplitude;
 uniform mat4 u_modelViewMatrix;
 uniform mat3 u_normalMatrix;
 
-in vec4 a_position;
-in vec2 a_texCoord0;
+attribute vec4 a_position;
+attribute vec2 a_texCoord0;
 
-out vec4 v_position;
-out vec3 v_normal;
+varying vec4 v_position;
+varying vec3 v_normal;
 
-out vec2 v_texCoord0;
+varying vec2 v_texCoord0;
 
 void main(void)
 {

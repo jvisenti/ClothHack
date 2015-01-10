@@ -9,21 +9,20 @@
 #import "RZViewTexture.h"
 #import <OpenGLES/ES2/gl.h>
 
-@interface RZViewTexture ()
+@interface RZViewTexture () {
+    GLsizei _texWidth;
+    GLsizei _texHeight;
+    
+    CGContextRef _context;
+    void *_pixData;
+    
+    dispatch_queue_t _renderQueue;
+    dispatch_semaphore_t _renderSemaphore;
+}
 
 @property (assign, nonatomic, readwrite) GLuint name;
 @property (assign, nonatomic, readwrite) CGSize size;
 @property (assign, nonatomic, readwrite) CGFloat scale;
-
-@property (assign, nonatomic) GLsizei texWidth;
-@property (assign, nonatomic) GLsizei texHeight;
-
-@property (assign, nonatomic) CGContextRef context;
-
-@property (strong, nonatomic) dispatch_queue_t renderQueue;
-@property (strong, nonatomic) dispatch_semaphore_t renderSemaphore;
-
-@property (assign, nonatomic, getter=isLoaded) BOOL loaded;
 
 @end
 
@@ -51,8 +50,12 @@
         CGContextTranslateCTM(_context, 0.0f, _texHeight);
         CGContextScaleCTM(_context, scale, -scale);
         
-        self.renderQueue = dispatch_queue_create("com.raizlabs.draw", DISPATCH_QUEUE_SERIAL);
-        self.renderSemaphore = dispatch_semaphore_create(1);
+        _pixData = CGBitmapContextGetData(_context);
+        
+        _renderQueue = dispatch_queue_create("com.raizlabs.view-texture-render", DISPATCH_QUEUE_SERIAL);
+        dispatch_set_target_queue(_renderQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
+        
+        _renderSemaphore = dispatch_semaphore_create(1);
     }
     return self;
 }
@@ -61,52 +64,36 @@
 {
     CGContextRelease(_context);
     
-    GLuint n = _name;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        glDeleteTextures(1, &n);
-    });
+    if ( _name != 0 ) {
+        GLuint n = _name;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            glDeleteTextures(1, &n);
+        });
+    }
 }
 
-- (void)updateWithView:(UIView *)view
+- (void)updateWithView:(UIView *)view synchronous:(BOOL)synchronous
 {
-    NSAssert([EAGLContext currentContext] != nil, @"%@ requires an active EAGLContext to update!", NSStringFromClass([self class]));
-
-    NSAssert(CGSizeEqualToSize(view.bounds.size, self.size), @"%@ view must match texture size!", NSStringFromClass([self class]));
+    NSAssert(CGSizeEqualToSize(view.bounds.size, _size), @"%@ view must match texture size!", NSStringFromClass([self class]));
     
-    if ( dispatch_semaphore_wait(self.renderSemaphore, DISPATCH_TIME_NOW ) == 0) {
-        dispatch_async(self.renderQueue, ^{
-            UIGraphicsPushContext(self.context);
+    if ( synchronous ) {
+        [self renderView:view];
+        [self updateTextureOnMainThread];
+    }
+    else if ( dispatch_semaphore_wait(_renderSemaphore, DISPATCH_TIME_NOW ) == 0 ) {
+        dispatch_async(_renderQueue, ^{
+            [self renderView:view];
             
-            [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:NO];
+            dispatch_semaphore_signal(_renderSemaphore);
             
-            UIGraphicsPopContext();
-            
-            dispatch_semaphore_signal(self.renderSemaphore);
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                void *data = CGBitmapContextGetData(self.context);
-                
-                if ( self.isLoaded ) {
-                    glBindTexture(GL_TEXTURE_2D, _name);
-                    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _texWidth, _texHeight, GL_RGBA, GL_UNSIGNED_BYTE, data);
-                }
-                else {
-                    [self generateObjects];
-                    
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _texWidth, _texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-                    
-                    self.loaded = YES;
-                }
-                
-                glBindTexture(GL_TEXTURE_2D, 0);
-            });
+            [self updateTextureOnMainThread];
         });
     }
 }
 
 #pragma mark - private methods
 
-- (void)generateObjects
+- (void)generateTexture
 {
     glGenTextures(1, &_name);
     glBindTexture(GL_TEXTURE_2D, _name);
@@ -116,6 +103,37 @@
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _texWidth, _texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+}
+
+- (void)renderView:(UIView *)view
+{
+    UIGraphicsPushContext(_context);
+    [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:NO];
+    UIGraphicsPopContext();
+}
+
+- (void)updateTextureOnMainThread
+{
+    void (^updateBlock)() = ^{
+        if ( _name == 0 ) {
+            [self generateTexture];
+        }
+        else {
+            glBindTexture(GL_TEXTURE_2D, _name);
+        }
+        
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _texWidth, _texHeight, GL_RGBA, GL_UNSIGNED_BYTE, _pixData);
+        
+        glBindTexture(GL_TEXTURE_2D, 0);
+    };
+    
+    if ( [NSThread isMainThread] ) {
+        updateBlock();
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), updateBlock);
+    }
 }
 
 @end

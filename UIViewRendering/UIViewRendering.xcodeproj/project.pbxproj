@@ -33,7 +33,6 @@
 		D48BFBB11A601CCD002A26F0 /* test.png in Resources */ = {isa = PBXBuildFile; fileRef = D48BFBB01A601CCD002A26F0 /* test.png */; };
 		D48BFBB41A60251A002A26F0 /* RZViewTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = D48BFBB31A60251A002A26F0 /* RZViewTexture.m */; };
 		D48BFBB71A60540D002A26F0 /* fragment.fsh in Resources */ = {isa = PBXBuildFile; fileRef = D48BFBB61A60540D002A26F0 /* fragment.fsh */; };
-		D48BFBBC1A605821002A26F0 /* RZModelNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D48BFBBB1A605821002A26F0 /* RZModelNode.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,8 +97,6 @@
 		D48BFBB21A60251A002A26F0 /* RZViewTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RZViewTexture.h; sourceTree = "<group>"; };
 		D48BFBB31A60251A002A26F0 /* RZViewTexture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RZViewTexture.m; sourceTree = "<group>"; };
 		D48BFBB61A60540D002A26F0 /* fragment.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = fragment.fsh; sourceTree = "<group>"; };
-		D48BFBBA1A605821002A26F0 /* RZModelNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RZModelNode.h; sourceTree = "<group>"; };
-		D48BFBBB1A605821002A26F0 /* RZModelNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RZModelNode.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,8 +146,6 @@
 				D41D859C1A5F703E005C22F9 /* ViewController.m */,
 				D48BFBB21A60251A002A26F0 /* RZViewTexture.h */,
 				D48BFBB31A60251A002A26F0 /* RZViewTexture.m */,
-				D48BFBBA1A605821002A26F0 /* RZModelNode.h */,
-				D48BFBBB1A605821002A26F0 /* RZModelNode.m */,
 				D41D86551A5F7D34005C22F9 /* vertex.vsh */,
 				D48BFBB61A60540D002A26F0 /* fragment.fsh */,
 				D48BFBB01A601CCD002A26F0 /* test.png */,
@@ -332,7 +327,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D41D86451A5F7420005C22F9 /* BHGLBasicAnimation.m in Sources */,
-				D48BFBBC1A605821002A26F0 /* RZModelNode.m in Sources */,
 				D41D864F1A5F7420005C22F9 /* BHGLScene.m in Sources */,
 				D41D864C1A5F7420005C22F9 /* BHGLModelNode.m in Sources */,
 				D41D864E1A5F7420005C22F9 /* BHGLProgram.m in Sources */,
@@ -472,6 +466,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = UIViewRendering/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -482,6 +477,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = UIViewRendering/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

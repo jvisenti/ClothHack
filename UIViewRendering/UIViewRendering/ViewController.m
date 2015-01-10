@@ -11,9 +11,8 @@
 #import "ViewController.h"
 #import "BHGL.h"
 #import "RZViewTexture.h"
-#import "RZModelNode.h"
 
-static const int depth  = 50;
+static const int depth  = 40;
 // 2 for 2 triangles and 3 for 3 vertexes per triangle.
 #define depthSize   (depth)*(depth)*2*3
 
@@ -151,27 +150,9 @@ static const int depth  = 50;
     mesh.cullFaces = GL_NONE;
     BHGLVertexTypeFree(vType);
     
-    RZModelNode *model = [[RZModelNode alloc] initWithMesh:mesh material:nil];
-    model.material.ambientColor = BHGLColorWhite;
-    model.material.diffuseColor = BHGLColorWhite;
-    model.material.specularColor = BHGLColorMake(0.6f, 0.6f, 0.6f, 1.0f);
-    model.material.shininess = 10.0f;
+    BHGLModelNode *model = [[BHGLModelNode alloc] initWithMesh:mesh material:nil];
     
     [self.rootNode addChild:model];
-    
-    BHGLLight *light = [[BHGLLight alloc] init];
-    light.type = BHGLLightTypePoint;
-    light.ambientColor = BHGLColorMake(0.8f, 0.8f, 0.8f, 1.0f);
-    light.diffuseColor = BHGLColorWhite;
-    light.specularColor = BHGLColorWhite;
-    light.position = GLKVector3Make(0.0f, 1.0f, 2.0f);
-    light.constantAttenuation = 1.0f;
-    light.linearAttenuation = 0.02f;
-    light.quadraticAttenuation = 0.017f;
-    
-    [self.scene addLight:light];
-    
-    self.scene.lightUniform = @"u_Lights";
     
     BHGLAnimation *rotate = [BHGLBasicAnimation rotateBy:GLKQuaternionMakeWithAngleAndAxis(M_PI, 1.0f, 0.0f, 0.0f) withDuration:2.0f];
     rotate.repeats = YES;
@@ -193,12 +174,19 @@ static const int depth  = 50;
     [program setVertexAttribute:BHGLVertexAttribTexCoord0 forName:kBHGLTexCoord0AttributeName];
     
     if ( [program link] ) {
-        self.scene.program = program;
         
-        [self.scene.program use];
-        glUniform1f([self.scene.program uniformPosition:@"u_anchor"], -1.0f);
-        glUniform1f([self.scene.program uniformPosition:@"u_velocity"] , 0.4f);
-        glUniform1f([self.scene.program uniformPosition:@"u_waveNumber"] , 8.0f);
+        [program use];
+        glUniform1f([program uniformPosition:@"u_anchor"], -1.0f);
+        glUniform1f([program uniformPosition:@"u_velocity"] , 0.8f);
+        glUniform1f([program uniformPosition:@"u_waveNumber"] , 8.0f);
+        
+        glUniform3f([program uniformPosition:@"u_LightPosition"], 0.0f, 1.0f, 2.0f);
+        glUniform3f([program uniformPosition:@"u_Ambient"], 1.0f, 1.0f, 1.0f);
+        glUniform3f([program uniformPosition:@"u_Diffuse"], 1.0f, 1.0f, 1.0f);
+        glUniform3f([program uniformPosition:@"u_Specular"], 0.6f, 0.6f, 0.6f);
+        glUniform3f([program uniformPosition:@"u_Attenuation"], 1.0f, 0.02f, 0.017f);
+        
+        self.scene.program = program;
     }
 }
 
@@ -231,7 +219,7 @@ static const int depth  = 50;
 {
     [self.scene updateRecursive:self.timeSinceLastUpdate];
     
-    [self.texture updateWithView:self.contentView];
+    [self.texture updateWithView:self.contentView synchronous:NO];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect

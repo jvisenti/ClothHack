@@ -18,6 +18,6 @@
 - (instancetype)initWithSize:(CGSize)size;
 - (instancetype)initWithSize:(CGSize)size scale:(CGFloat)scale;
 
-- (void)updateWithView:(UIView *)view;
+- (void)updateWithView:(UIView *)view synchronous:(BOOL)synchronous;
 
 @end
