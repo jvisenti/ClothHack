@@ -19,10 +19,6 @@
     dispatch_semaphore_t _renderSemaphore;
 }
 
-@property (assign, nonatomic, readwrite) GLuint name;
-@property (assign, nonatomic, readwrite) CGSize size;
-@property (assign, nonatomic, readwrite) CGFloat scale;
-
 @end
 
 @implementation RZViewTexture

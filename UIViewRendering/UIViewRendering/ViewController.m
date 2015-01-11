@@ -6,14 +6,14 @@
 //  Copyright (c) 2015 Raizlabs. All rights reserved.
 //
 
+@import OpenGLES.ES2;
 @import GLKit;
 
 #import "ViewController.h"
-#import "BHGLMesh.h"
-#import "BHGLCUtils.h"
 #import "RZViewTexture.h"
 #import "RZRenderLoop.h"
 #import "RZQuadMesh.h"
+#import "RZClothEffect.h"
 
 @interface ViewController () <GLKViewDelegate>
 
@@ -23,7 +23,7 @@
 
 @property (strong, nonatomic) RZRenderLoop *renderLoop;
 
-@property (strong, nonatomic) BHGLProgram *program;
+@property (strong, nonatomic) RZClothEffect *effect;
 @property (strong, nonatomic) RZQuadMesh *mesh;
 @property (strong, nonatomic) RZViewTexture *texture;
 
@@ -82,7 +82,7 @@
     
     CGFloat aspectRatio = (self.view.bounds.size.width / self.view.bounds.size.height);
     
-    self.program.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(30.0f), aspectRatio, 0.01f, 10.0f);
+    self.effect.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(30.0f), aspectRatio, 0.01f, 10.0f);
 
     GLKMatrix4 scale = GLKMatrix4MakeScale(aspectRatio, 1.0f, aspectRatio);
     GLKMatrix4 rotation = GLKMatrix4MakeWithQuaternion(GLKQuaternionMake(-0.133518726, 0.259643972, 0.0340433009, 0.955821096));
@@ -91,7 +91,7 @@
     
     mat.m[14] = -3.72f;
     
-    self.program.modelViewMatrix = mat;
+    self.effect.modelViewMatrix = mat;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -108,7 +108,7 @@
     
     [self createShaders];
     
-    self.mesh = [RZQuadMesh quadWithSubdivisionLevel:6];
+    self.mesh = [RZQuadMesh quadWithSubdivisionLevel:5];
     
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -116,29 +116,15 @@
 
 - (void)createShaders
 {
-    BHGLProgram *program = [[BHGLProgram alloc] initWithVertexShaderNamed:@"vertex.vsh" fragmentShaderNamed:@"fragment.fsh"];
+    self.effect = [RZClothEffect clothEffect];
     
-    program.mvpUniformName = kBHGLMVPUniformName;
-    program.mvUniformName = kBHGLMVUniformName;
+    self.effect.anchors = GLKVector2Make(-1.0f, 1.0f);
     
-    [program setVertexAttribute:0 forName:kBHGLPositionAttributeName];
-    [program setVertexAttribute:1 forName:kBHGLTexCoord0AttributeName];
+    self.effect.waveCount = 8.0f;
+    self.effect.waveVelocity = 0.8f;
     
-    if ( [program link] ) {
-        
-        [program use];
-        glUniform1f([program uniformPosition:@"u_anchor"], -1.0f);
-        glUniform1f([program uniformPosition:@"u_velocity"] , 0.8f);
-        glUniform1f([program uniformPosition:@"u_waveNumber"] , 8.0f);
-        
-        glUniform3f([program uniformPosition:@"u_LightPosition"], 0.0f, 1.0f, 2.0f);
-        glUniform3f([program uniformPosition:@"u_Ambient"], 1.0f, 1.0f, 1.0f);
-        glUniform3f([program uniformPosition:@"u_Diffuse"], 1.0f, 1.0f, 1.0f);
-        glUniform3f([program uniformPosition:@"u_Specular"], 0.6f, 0.6f, 0.6f);
-        glUniform3f([program uniformPosition:@"u_Attenuation"], 1.0f, 0.02f, 0.017f);
-        
-        self.program = program;
-    }
+    self.effect.lightPosition = GLKVector3Make(0.0f, 1.0f, 2.0f);
+    self.effect.lightAttenuation = GLKVector3Make(1.0f, 0.02f, 0.017f);
 }
 
 - (void)setupRenderLoop
@@ -160,23 +146,17 @@
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glBindTexture(GL_TEXTURE_2D, self.texture.name);
+    self.effect.waveAmplitude = 0.1f + 0.3f * self.slider.value;
 
-    glUniform1f([self.program uniformPosition:@"u_timeOffset"] , CACurrentMediaTime());
-    glUniform1f([self.program uniformPosition:@"u_amplitude"] , 0.1f + 0.3f * self.slider.value);
+    [self.effect prepareToDraw];
+    glBindTexture(GL_TEXTURE_2D, self.texture.name);
     
-    [self.program prepareToDraw];
     [self.mesh render];
     
     glBindTexture(GL_TEXTURE_2D, 0);
 
     const GLenum discards[]  = {GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT};
     glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, discards);
-}
-
-- (IBAction)switchChanged:(UISwitch *)sender
-{
-    glUniform1i([self.program uniformPosition:@"u_Emboss"], !sender.isOn);
 }
 
 @end

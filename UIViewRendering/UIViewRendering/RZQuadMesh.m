@@ -71,13 +71,11 @@ void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVert
 {
     glBindVertexArrayOES(_vao);
     glBindBuffer(GL_ARRAY_BUFFER, _bufferSet.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bufferSet.ibo);
     
     glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, NULL);
 
     glBindVertexArrayOES(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 #pragma mark - private methods
@@ -107,7 +105,6 @@ void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVert
         
         glBindVertexArrayOES(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
     return self;
 }
