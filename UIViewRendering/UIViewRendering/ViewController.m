@@ -78,7 +78,7 @@
     [super viewDidLayoutSubviews];
     
     if ( self.texture == nil ) {
-        self.texture = [[RZViewTexture alloc] initWithSize:self.contentView.bounds.size];
+        self.texture = [RZViewTexture textureWithSize:self.contentView.bounds.size];
     }
     
     CGFloat aspectRatio = (self.view.bounds.size.width / self.view.bounds.size.height);

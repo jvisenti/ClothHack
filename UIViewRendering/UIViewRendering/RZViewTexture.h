@@ -14,8 +14,8 @@
 @property (assign, nonatomic, readonly) CGSize size;
 @property (assign, nonatomic, readonly) CGFloat scale;
 
-- (instancetype)initWithSize:(CGSize)size;
-- (instancetype)initWithSize:(CGSize)size scale:(CGFloat)scale;
++ (instancetype)textureWithSize:(CGSize)size;
++ (instancetype)textureWithSize:(CGSize)size scale:(CGFloat)scale;
 
 - (void)updateWithView:(UIView *)view synchronous:(BOOL)synchronous;
 

@@ -23,36 +23,14 @@
 
 @implementation RZViewTexture
 
-- (instancetype)initWithSize:(CGSize)size
++ (instancetype)textureWithSize:(CGSize)size
 {
-    return [self initWithSize:size scale:[UIScreen mainScreen].scale];
+    return [self textureWithSize:size scale:[UIScreen mainScreen].scale];
 }
 
-- (instancetype)initWithSize:(CGSize)size scale:(CGFloat)scale
++ (instancetype)textureWithSize:(CGSize)size scale:(CGFloat)scale
 {
-    self = [super init];
-    if ( self ) {
-        _size = size;
-        _scale = scale;
-        
-        _texWidth = size.width * scale;
-        _texHeight = size.height * scale;
-        
-        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-        _context = CGBitmapContextCreate(NULL, _texWidth, _texHeight, 8, 4 * _texWidth, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
-        CGColorSpaceRelease(colorSpace);
-        
-        CGContextTranslateCTM(_context, 0.0f, _texHeight);
-        CGContextScaleCTM(_context, scale, -scale);
-        
-        _pixData = CGBitmapContextGetData(_context);
-        
-        _renderQueue = dispatch_queue_create("com.raizlabs.view-texture-render", DISPATCH_QUEUE_SERIAL);
-        dispatch_set_target_queue(_renderQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
-        
-        _renderSemaphore = dispatch_semaphore_create(1);
-    }
-    return self;
+    return [[[self class] alloc] initWithSize:size scale:scale];
 }
 
 - (void)dealloc
@@ -91,6 +69,33 @@
 }
 
 #pragma mark - private methods
+
+- (instancetype)initWithSize:(CGSize)size scale:(CGFloat)scale
+{
+    self = [super init];
+    if ( self ) {
+        _size = size;
+        _scale = scale;
+        
+        _texWidth = size.width * scale;
+        _texHeight = size.height * scale;
+        
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+        _context = CGBitmapContextCreate(NULL, _texWidth, _texHeight, 8, 4 * _texWidth, colorSpace, (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
+        CGColorSpaceRelease(colorSpace);
+        
+        CGContextTranslateCTM(_context, 0.0f, _texHeight);
+        CGContextScaleCTM(_context, scale, -scale);
+        
+        _pixData = CGBitmapContextGetData(_context);
+        
+        _renderQueue = dispatch_queue_create("com.raizlabs.view-texture-render", DISPATCH_QUEUE_SERIAL);
+        dispatch_set_target_queue(_renderQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
+        
+        _renderSemaphore = dispatch_semaphore_create(1);
+    }
+    return self;
+}
 
 - (void)generateTextureOnMainThread
 {
