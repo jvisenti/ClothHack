@@ -44,6 +44,12 @@
     [self teardownDisplayLink];
 }
 
+- (void)setPreferredFPS:(NSInteger)preferredFPS
+{
+    preferredFPS = MAX(1, MIN(preferredFPS, 60));
+    self.displayLink.frameInterval = 60 / preferredFPS;
+}
+
 - (void)setUpdateTarget:(id)target action:(SEL)updateAction
 {
     @synchronized (self) {

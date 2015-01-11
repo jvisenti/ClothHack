@@ -75,6 +75,10 @@
 {
     NSAssert(CGSizeEqualToSize(view.bounds.size, _size), @"%@ view must match texture size!", NSStringFromClass([self class]));
     
+    if ( _name == 0 ) {
+        [self generateTextureOnMainThread];
+    }
+    
     if ( synchronous ) {
         [self renderView:view];
         [self updateTextureOnMainThread];
@@ -92,17 +96,27 @@
 
 #pragma mark - private methods
 
-- (void)generateTexture
+- (void)generateTextureOnMainThread
 {
-    glGenTextures(1, &_name);
-    glBindTexture(GL_TEXTURE_2D, _name);
+    void (^genBlock)() = ^{
+        glGenTextures(1, &_name);
+        glBindTexture(GL_TEXTURE_2D, _name);
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _texWidth, _texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, _pixData);
+        
+        glBindTexture(GL_TEXTURE_2D, 0);
+    };
     
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _texWidth, _texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    if ( [NSThread isMainThread] ) {
+        genBlock();
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), genBlock);
+    }
 }
 
 - (void)renderView:(UIView *)view
@@ -115,13 +129,7 @@
 - (void)updateTextureOnMainThread
 {
     void (^updateBlock)() = ^{
-        if ( _name == 0 ) {
-            [self generateTexture];
-        }
-        else {
-            glBindTexture(GL_TEXTURE_2D, _name);
-        }
-        
+        glBindTexture(GL_TEXTURE_2D, _name);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _texWidth, _texHeight, GL_RGBA, GL_UNSIGNED_BYTE, _pixData);
         
         glBindTexture(GL_TEXTURE_2D, 0);

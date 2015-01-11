@@ -8,9 +8,6 @@ uniform float u_velocity;
 uniform float u_waveNumber;
 uniform float u_amplitude;
 
-uniform mat4 u_modelViewMatrix;
-uniform mat3 u_normalMatrix;
-
 attribute vec4 a_position;
 attribute vec2 a_texCoord0;
 

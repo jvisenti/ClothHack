@@ -14,6 +14,8 @@
 
 @property (assign, nonatomic) BOOL automaticallyResumeWhenBecomingActive;
 
+@property (assign, nonatomic) NSInteger preferredFPS;
+
 + (instancetype)renderLoop;
 
 - (void)setUpdateTarget:(id)target action:(SEL)updateAction;

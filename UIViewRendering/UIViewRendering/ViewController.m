@@ -9,17 +9,13 @@
 @import GLKit;
 
 #import "ViewController.h"
-#import "BHGL.h"
+#import "BHGLMesh.h"
+#import "BHGLCUtils.h"
 #import "RZViewTexture.h"
 #import "RZRenderLoop.h"
+#import "RZQuadMesh.h"
 
-static const int depth  = 40;
-// 2 for 2 triangles and 3 for 3 vertexes per triangle.
-#define depthSize   (depth)*(depth)*2*3
-
-@interface ViewController () <GLKViewDelegate> {
-    BHGLTextureVertex _textureVertex[depthSize];
-}
+@interface ViewController () <GLKViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (weak, nonatomic) IBOutlet UISlider *slider;
@@ -27,8 +23,8 @@ static const int depth  = 40;
 
 @property (strong, nonatomic) RZRenderLoop *renderLoop;
 
-@property (strong, nonatomic) BHGLScene *scene;
-@property (strong, nonatomic) BHGLNode *rootNode;
+@property (strong, nonatomic) BHGLProgram *program;
+@property (strong, nonatomic) RZQuadMesh *mesh;
 @property (strong, nonatomic) RZViewTexture *texture;
 
 @property (assign, nonatomic) CGPoint lastPanPoint;
@@ -66,8 +62,6 @@ static const int depth  = 40;
         [(UIView *)self.contentView.subviews[2] setTransform:CGAffineTransformMakeTranslation(200.0f, 0.0f)];
     } completion:nil];
     
-    [self setupTextureVertex];
-
     [self setupGL];
 }
 
@@ -88,11 +82,16 @@ static const int depth  = 40;
     
     CGFloat aspectRatio = (self.view.bounds.size.width / self.view.bounds.size.height);
     
-    self.scene.activeCamera.aspectRatio = aspectRatio;
+    self.program.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(30.0f), aspectRatio, 0.01f, 10.0f);
+
+    GLKMatrix4 scale = GLKMatrix4MakeScale(aspectRatio, 1.0f, aspectRatio);
+    GLKMatrix4 rotation = GLKMatrix4MakeWithQuaternion(GLKQuaternionMake(-0.133518726, 0.259643972, 0.0340433009, 0.955821096));
     
-    // TODO: correct position calculation here
-    self.rootNode.position = GLKVector3Make(0.0f, 0.0f, -3.72f);
-    self.rootNode.scale = GLKVector3Make(aspectRatio, 1.0f, aspectRatio);
+    GLKMatrix4 mat = GLKMatrix4Multiply(rotation, scale);
+    
+    mat.m[14] = -3.72f;
+    
+    self.program.modelViewMatrix = mat;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -102,60 +101,17 @@ static const int depth  = 40;
     self.renderLoop = nil;
 }
 
-- (void)setupTextureVertex {
-    float glIncrementer = 2.0/depth;
-    float imgIncrmementer = 1.0f/depth;
-    int counter = 0;
-    for (int y = 0; y < depth; y++) {
-        for (int x = 0; x < depth; x++) {
-            BHGLTextureVertex topLeftVertex = {{ -1.0f + glIncrementer * x, 1.0f - glIncrementer * y, 0.0f}, { imgIncrmementer * x, imgIncrmementer * y }};
-            BHGLTextureVertex bottomLeftVertex = {{ -1.0f + glIncrementer * x, 1.0f - glIncrementer * (y+1), 0.0f}, { imgIncrmementer * x, imgIncrmementer * (y+1) }};
-            BHGLTextureVertex topRightVertex = {{ -1.0f + glIncrementer * (x+1), 1.0f - glIncrementer * y, 0.0f}, { imgIncrmementer * (x+1), imgIncrmementer * y }};
-            BHGLTextureVertex bottomRightVertex = {{ -1.0f + glIncrementer * (x+1), 1.0f - glIncrementer * (y+1), 0.0f}, { imgIncrmementer * (x+1), imgIncrmementer * (y+1) }};
-            _textureVertex[counter++] = topLeftVertex;
-            _textureVertex[counter++] = bottomLeftVertex;
-            _textureVertex[counter++] = topRightVertex;
-
-            _textureVertex[counter++] = bottomLeftVertex;
-            _textureVertex[counter++] = topRightVertex;
-            _textureVertex[counter++] = bottomRightVertex;
-        }
-    }
-}
-
 - (void)setupGL
 {
     self.glView.context = [[self class] bestContext];
     [EAGLContext setCurrentContext:self.glView.context];
     
-    self.scene = [[BHGLScene alloc] init];
-    
-    BHGLCamera *camera = [[BHGLCamera alloc] initWithFieldOfView:GLKMathDegreesToRadians(30.0f) aspectRatio:(CGRectGetWidth(self.glView.bounds) / CGRectGetHeight(self.glView.bounds)) nearClippingPlane:0.01f farClippingPlane:10.0f];
-    
-    [self.scene addCamera:camera];
-    
-    self.rootNode = [[BHGLNode alloc] init];
-    [self.scene addChild:self.rootNode];
-    
-    self.rootNode.rotation = GLKQuaternionMake(-0.133518726, 0.259643972, 0.0340433009, 0.955821096);
     [self createShaders];
     
-    BHGLVertexType vType = BHGLVertexTypeCreateWithType(BHGL_TEXTURE_VERTEX);
-    BHGLMesh *mesh = [[BHGLMesh alloc] initWithVertexData:_textureVertex vertexDataSize:sizeof(_textureVertex) vertexType:&vType];
-//    mesh.primitiveMode = GL_TRIANGLES;
-    mesh.cullFaces = GL_NONE;
-    BHGLVertexTypeFree(vType);
+    self.mesh = [RZQuadMesh quadWithSubdivisionLevel:6];
     
-    BHGLModelNode *model = [[BHGLModelNode alloc] initWithMesh:mesh material:nil];
-    
-    [self.rootNode addChild:model];
-    
-    BHGLAnimation *rotate = [BHGLBasicAnimation rotateBy:GLKQuaternionMakeWithAngleAndAxis(M_PI, 1.0f, 0.0f, 0.0f) withDuration:2.0f];
-    rotate.repeats = YES;
-    
-//    [model runAnimation:rotate];
-
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 }
 
 - (void)createShaders
@@ -164,10 +120,9 @@ static const int depth  = 40;
     
     program.mvpUniformName = kBHGLMVPUniformName;
     program.mvUniformName = kBHGLMVUniformName;
-    program.normalMatrixUniformName = kBHGLNormalMatrixUniformName;
     
-    [program setVertexAttribute:BHGLVertexAttribPosition forName:kBHGLPositionAttributeName];
-    [program setVertexAttribute:BHGLVertexAttribTexCoord0 forName:kBHGLTexCoord0AttributeName];
+    [program setVertexAttribute:0 forName:kBHGLPositionAttributeName];
+    [program setVertexAttribute:1 forName:kBHGLTexCoord0AttributeName];
     
     if ( [program link] ) {
         
@@ -182,7 +137,7 @@ static const int depth  = 40;
         glUniform3f([program uniformPosition:@"u_Specular"], 0.6f, 0.6f, 0.6f);
         glUniform3f([program uniformPosition:@"u_Attenuation"], 1.0f, 0.02f, 0.017f);
         
-        self.scene.program = program;
+        self.program = program;
     }
 }
 
@@ -198,8 +153,6 @@ static const int depth  = 40;
 
 - (void)update:(CFTimeInterval)dt
 {
-    [self.scene updateRecursive:dt];
-    
     [self.texture updateWithView:self.contentView synchronous:NO];
 }
 
@@ -209,22 +162,21 @@ static const int depth  = 40;
 
     glBindTexture(GL_TEXTURE_2D, self.texture.name);
 
-    glUniform1f([self.scene.program uniformPosition:@"u_timeOffset"] , CACurrentMediaTime());
-    glUniform1f([self.scene.program uniformPosition:@"u_amplitude"] , 0.1f + 0.3f * self.slider.value);
+    glUniform1f([self.program uniformPosition:@"u_timeOffset"] , CACurrentMediaTime());
+    glUniform1f([self.program uniformPosition:@"u_amplitude"] , 0.1f + 0.3f * self.slider.value);
     
-    [self.scene render];
+    [self.program prepareToDraw];
+    [self.mesh render];
     
     glBindTexture(GL_TEXTURE_2D, 0);
 
     const GLenum discards[]  = {GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT};
     glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, discards);
-    
-    glFlush();
 }
 
 - (IBAction)switchChanged:(UISwitch *)sender
 {
-    glUniform1i([self.scene.program uniformPosition:@"u_Emboss"], !sender.isOn);
+    glUniform1i([self.program uniformPosition:@"u_Emboss"], !sender.isOn);
 }
 
 @end
