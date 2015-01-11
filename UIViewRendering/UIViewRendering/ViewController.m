@@ -13,6 +13,7 @@
 #import "RZViewTexture.h"
 #import "RZRenderLoop.h"
 #import "RZQuadMesh.h"
+#import "RZTransform3D.h"
 #import "RZClothEffect.h"
 
 @interface ViewController () <GLKViewDelegate>
@@ -82,16 +83,15 @@
     
     CGFloat aspectRatio = (self.view.bounds.size.width / self.view.bounds.size.height);
     
-    self.effect.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(30.0f), aspectRatio, 0.01f, 10.0f);
+    RZTransform3D *transform = [RZTransform3D transform];
 
-    GLKMatrix4 scale = GLKMatrix4MakeScale(aspectRatio, 1.0f, aspectRatio);
-    GLKMatrix4 rotation = GLKMatrix4MakeWithQuaternion(GLKQuaternionMake(-0.133518726, 0.259643972, 0.0340433009, 0.955821096));
+    transform.translation = GLKVector3Make(0.0f, 0.0f, -3.72f);
+    transform.scale = GLKVector3Make(aspectRatio, 1.0f, aspectRatio);
+    transform.rotation = GLKQuaternionMake(-0.133518726, 0.259643972, 0.0340433009, 0.955821096);
+
+    self.effect.modelViewMatrix = transform.modelMatrix;
     
-    GLKMatrix4 mat = GLKMatrix4Multiply(rotation, scale);
-    
-    mat.m[14] = -3.72f;
-    
-    self.effect.modelViewMatrix = mat;
+    self.effect.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(30.0f), aspectRatio, 0.01f, 10.0f);
 }
 
 - (void)viewDidDisappear:(BOOL)animated
