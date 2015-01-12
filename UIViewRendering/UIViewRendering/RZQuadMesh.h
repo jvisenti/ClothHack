@@ -8,10 +8,12 @@
 #import <Foundation/Foundation.h>
 #import <OpenGLES/gltypes.h>
 
+OBJC_EXTERN NSInteger const kRZQuadMeshMaxSubdivisions;
+
 @interface RZQuadMesh : NSObject
 
 + (instancetype)quad;
-+ (instancetype)quadWithSubdivisionLevel:(GLubyte)subdivisons;
++ (instancetype)quadWithSubdivisionLevel:(NSInteger)subdivisons;
 
 - (void)render;
 

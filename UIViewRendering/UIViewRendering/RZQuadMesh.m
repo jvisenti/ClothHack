@@ -13,7 +13,15 @@ typedef struct _RZBufferSet {
     GLuint vbo, ibo;
 } RZBufferSet;
 
-void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVerts, GLvoid **indices, GLuint *numIdxs);
+NSInteger const kRZQuadMeshMaxSubdivisions = 8;
+
+static const GLfloat *s_CachedVertices[kRZQuadMeshMaxSubdivisions];
+static const GLushort *s_CachedIndexes[kRZQuadMeshMaxSubdivisions];
+static const GLint *s_RefCounts[kRZQuadMeshMaxSubdivisions];
+
+static dispatch_semaphore_t s_Semaphore;
+
+void RZGenerateQuadMesh(NSInteger subdivisions, GLvoid **vertices, GLuint *numVerts, GLvoid **indices, GLuint *numIdxs);
 
 @interface RZQuadMesh ()
 
@@ -26,18 +34,25 @@ void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVert
 @property (assign, nonatomic) GLvoid *vertexData;
 @property (assign, nonatomic) GLvoid *indexData;
 
+@property (assign, nonatomic) NSInteger subdivisions;
+
 @end
 
 @implementation RZQuadMesh
 
 #pragma mark - lifecycle
 
++ (void)load
+{
+    s_Semaphore = dispatch_semaphore_create(1);
+}
+
 + (instancetype)quad
 {
     return [self quadWithSubdivisionLevel:0];
 }
 
-+ (instancetype)quadWithSubdivisionLevel:(GLubyte)subdivisons
++ (instancetype)quadWithSubdivisionLevel:(NSInteger)subdivisons
 {
     RZQuadMesh *mesh = nil;
     
@@ -53,8 +68,19 @@ void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVert
 
 - (void)dealloc
 {
-    free(_vertexData);
-    free(_indexData);
+    dispatch_semaphore_wait(s_Semaphore, DISPATCH_TIME_FOREVER);
+    
+    s_RefCounts[_subdivisions]--;
+    
+    if ( s_RefCounts[_subdivisions] <= 0 ) {
+        free((void *)s_CachedVertices[_subdivisions]);
+        s_CachedVertices[_subdivisions] = NULL;
+        
+        free((void *)s_CachedIndexes[_subdivisions]);
+        s_CachedIndexes[_subdivisions] = NULL;
+    }
+    
+    dispatch_semaphore_signal(s_Semaphore);
     
     glDeleteVertexArraysOES(1, &_vao);
     glDeleteBuffers(2, &_bufferSet.vbo);
@@ -75,10 +101,11 @@ void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVert
 
 #pragma mark - private methods
 
-- (instancetype)initWithSubdivisionLevel:(GLubyte)subdivisions
+- (instancetype)initWithSubdivisionLevel:(NSInteger)subdivisions
 {
     self = [super init];
     if ( self ) {
+        subdivisions = MAX(0, MIN(subdivisions, kRZQuadMeshMaxSubdivisions));
         RZGenerateQuadMesh(subdivisions, &_vertexData, &_vertexCount, &_indexData, &_indexCount);
 
         glGenVertexArraysOES(1, &_vao);
@@ -100,11 +127,13 @@ void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVert
         
         glBindVertexArrayOES(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
+        _subdivisions = subdivisions;
     }
     return self;
 }
 
-void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVerts, GLvoid **indices, GLuint *numIdxs)
+void RZGenerateQuadMesh(NSInteger subdivisions, GLvoid **vertices, GLuint *numVerts, GLvoid **indices, GLuint *numIdxs)
 {
     GLuint subs = pow(2.0, subdivisions);
     GLuint pts = subs + 1;
@@ -115,33 +144,47 @@ void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVert
     *numVerts = pts * pts;
     *numIdxs = 6 * subs * subs;
     
-    GLfloat *verts = (GLfloat *)malloc(5 * *numVerts * sizeof(GLfloat));
-    GLushort *idxs = (GLushort *)malloc(*numIdxs * sizeof(GLushort));
-    
-    int v = 0;
-    int i = 0;
-    
-    for ( int y = 0; y < pts; y++ ) {
-        for ( int x = 0; x < pts; x++ ) {
-            verts[v++] = -1.0f + ptStep * x;
-            verts[v++] = 1.0f - ptStep * y;
-            verts[v++] = 0.0f;
-            verts[v++] = texStep * x;
-            verts[v++] = texStep * y;
-            
-            if ( x < subs && y < subs ) {
-                idxs[i++] = y * pts + x;
-                idxs[i++] = (y + 1) * pts + x;
-                idxs[i++] = y * pts + x + 1;
-                idxs[i++] = y * pts + x + 1;
-                idxs[i++] = (y + 1) * pts + x;
-                idxs[i++] = (y + 1) * pts + x + 1;
+    if ( s_CachedVertices[subdivisions] == NULL ) {
+        GLfloat *verts = (GLfloat *)malloc(5 * *numVerts * sizeof(GLfloat));
+        GLushort *idxs = (GLushort *)malloc(*numIdxs * sizeof(GLushort));
+        
+        int v = 0;
+        int i = 0;
+        
+        for ( int y = 0; y < pts; y++ ) {
+            for ( int x = 0; x < pts; x++ ) {
+                verts[v++] = -1.0f + ptStep * x;
+                verts[v++] = 1.0f - ptStep * y;
+                verts[v++] = 0.0f;
+                verts[v++] = texStep * x;
+                verts[v++] = texStep * y;
+                
+                if ( x < subs && y < subs ) {
+                    idxs[i++] = y * pts + x;
+                    idxs[i++] = (y + 1) * pts + x;
+                    idxs[i++] = y * pts + x + 1;
+                    idxs[i++] = y * pts + x + 1;
+                    idxs[i++] = (y + 1) * pts + x;
+                    idxs[i++] = (y + 1) * pts + x + 1;
+                }
             }
         }
+        
+        dispatch_semaphore_wait(s_Semaphore, DISPATCH_TIME_FOREVER);
+        
+        s_CachedVertices[subdivisions] = verts;
+        s_CachedIndexes[subdivisions] = idxs;
     }
+    else {
+        dispatch_semaphore_wait(s_Semaphore, DISPATCH_TIME_FOREVER);
+    }
+
+    *vertices = (GLvoid *)s_CachedVertices[subdivisions];
+    *indices = (GLvoid *)s_CachedIndexes[subdivisions];
     
-    *vertices = verts;
-    *indices = idxs;
+    s_RefCounts[subdivisions]++;
+    
+    dispatch_semaphore_signal(s_Semaphore);
 }
 
 @end
