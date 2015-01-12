@@ -105,7 +105,7 @@ void main(void)
 {
     RZClothEffect *effect = [super effectWithVertexShader:kRZClothVSH fragmentShader:kRZClothFSH];
     
-    effect.requiredLevelOfDetail = 6;
+    effect.preferredLevelOfDetail = 6;
     
     effect.anchors = GLKVector2Make(-1.0f, 1.0f);
     

@@ -231,7 +231,7 @@
     
     if ( [effect link] ) {
         if ( self.backingView != nil ) {
-            self.viewMesh = [RZQuadMesh quadWithSubdivisionLevel:effect.requiredLevelOfDetail];
+            self.viewMesh = [RZQuadMesh quadWithSubdivisionLevel:effect.preferredLevelOfDetail];
         }
         
         _effect = effect;
