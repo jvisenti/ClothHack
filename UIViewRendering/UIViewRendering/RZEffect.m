@@ -38,8 +38,6 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
     NSString *vsh = [NSString stringWithContentsOfFile:vshPath encoding:NSASCIIStringEncoding error:nil];
     NSString *fsh = [NSString stringWithContentsOfFile:fshPath encoding:NSASCIIStringEncoding error:nil];
     
-    RZEffect *effect = nil;
-
 #if DEBUG
     if ( vsh == nil ) {
         NSLog(@"%@ failed to load vertex shader %@.vsh", NSStringFromClass(self), vshName);
@@ -49,17 +47,29 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
         NSLog(@"%@ failed to load fragment shader %@.fsh", NSStringFromClass(self), fshName);
     }
 #endif
-    
-    if ( vsh != nil && fsh != nil ) {
-        effect = [self effectWithVertexShader:vsh fragmentShader:fsh];
-    }
-    
-    return effect;
+
+    return [self effectWithVertexShader:vsh fragmentShader:fsh];
 }
 
 + (instancetype)effectWithVertexShader:(NSString *)vsh fragmentShader:(NSString *)fsh
 {
-    return [[self alloc] initWithVertexShader:vsh fragmentShader:fsh];
+    RZEffect *effect = nil;
+    
+#if DEBUG
+    if ( vsh == nil ) {
+        NSLog(@"%@ failed to intialize, missing vertex shader.", NSStringFromClass(self));
+    }
+    
+    if ( fsh == nil ) {
+        NSLog(@"%@ failed to intialize, missing fragment shader.", NSStringFromClass(self));
+    }
+#endif
+    
+    if ( vsh != nil && fsh != nil ) {
+        effect = [[self alloc] initWithVertexShader:vsh fragmentShader:fsh];
+    }
+    
+    return effect;
 }
 
 - (void)dealloc
