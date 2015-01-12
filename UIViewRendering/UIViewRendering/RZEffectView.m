@@ -92,6 +92,17 @@
     }
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    CGFloat aspectRatio = (CGRectGetWidth(self.bounds) / CGRectGetWidth(self.bounds));
+    self.effectCamera.aspectRatio = aspectRatio;
+    
+    GLKVector3 camTrans = GLKVector3Make(0.0f, 0.0f, -1.0f / tanf(self.effectCamera.fieldOfView / 2.0f));
+    self.effectTransform.translation = GLKVector3Add(self.effectTransform.translation, camTrans);
+}
+
 #pragma mark - public methods
 
 - (void)setFrame:(CGRect)frame
@@ -183,6 +194,8 @@
     
     self.context = [[self class] bestContext];
     
+    self.effectCamera = [RZCamera cameraWithFieldOfView:GLKMathDegreesToRadians(30.0f) aspectRatio:1.0f nearClipping:0.001f farClipping:10.0f];
+    
     self.effectTransform = [RZTransform3D transform];
     
     if ( [EAGLContext setCurrentContext:self.context] ) {
@@ -243,6 +256,9 @@
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _drb);
     
     glBindRenderbuffer(GL_RENDERBUFFER, _crb);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 - (void)updateBuffers
@@ -311,6 +327,7 @@
 - (void)render
 {
     [EAGLContext setCurrentContext:self.context];
+    glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -345,7 +362,13 @@
     const GLenum discards[]  = {GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT};
     glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, discards);
     
+    glBindRenderbuffer(GL_RENDERBUFFER, _crb);
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
+    
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glUseProgram(0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 @end

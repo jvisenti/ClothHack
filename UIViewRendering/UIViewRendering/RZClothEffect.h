@@ -17,10 +17,9 @@
 @property (assign, nonatomic) GLfloat waveAmplitude;
 @property (assign, nonatomic) GLfloat waveVelocity;
 
-@property (assign, nonatomic) GLKVector3 lightPosition;
+@property (assign, nonatomic) GLKVector3 lightOffset;
 @property (assign, nonatomic) GLKVector3 ambientLight;
 @property (assign, nonatomic) GLKVector3 diffuseLight;
 @property (assign, nonatomic) GLKVector3 specularLight;
-@property (assign, nonatomic) GLKVector3 lightAttenuation;
 
 @end

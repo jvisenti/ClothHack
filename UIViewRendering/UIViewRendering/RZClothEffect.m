@@ -19,6 +19,7 @@ uniform float u_Waves;
 uniform float u_Amplitude;
 uniform float u_Velocity;
 
+uniform vec3 u_LightOffset;
 uniform float u_Time;
 
 attribute vec4 a_position;
@@ -26,20 +27,24 @@ attribute vec2 a_texCoord0;
 
 varying vec4 v_position;
 varying vec3 v_normal;
-
 varying vec2 v_texCoord0;
 
+varying vec3 v_lightPosition;
+                                                   
 void main(void)\
 {
     vec4 pos = a_position;
 
     float val = u_Waves * (pos.x - u_Velocity * u_Time);
-    pos.z = u_Amplitude * (pos.x - u_Anchors[0]) / abs(u_Anchors[1] - u_Anchors[0]) * sin(val);
+    pos.z = u_Amplitude * min((pos.x - u_Anchors[0]) / abs(u_Anchors[1] - u_Anchors[0]), 1.0) * sin(val);
 
     v_normal = vec3(normalize(vec2(-u_Waves * u_Amplitude * cos(val), 1.0)), 0.0);
 
     v_position = u_MVMatrix * pos;
     v_texCoord0 = a_texCoord0;
+    
+    vec3 trans = vec3(u_MVMatrix[3][0], u_MVMatrix[3][1], u_MVMatrix[3][2]);
+    v_lightPosition = trans + u_LightOffset;
 
     gl_Position = u_MVPMatrix * pos;
 });
@@ -48,18 +53,19 @@ static NSString* const kRZClothFSH = RZ_SHADER_SRC(
 precision mediump float;
 
 const float c_Shininess = 10.0;
+const vec3 c_Attenuation = vec3(1.0, 0.02, 0.017);
                                                    
-uniform vec3 u_LightPosition;
 uniform vec3 u_Ambient;
 uniform vec3 u_Diffuse;
 uniform vec3 u_Specular;
-uniform vec3 u_Attenuation;
 
 uniform sampler2D u_Texture;
 
 varying vec4 v_position;
 varying vec3 v_normal;
 varying highp vec2 v_texCoord0;
+                                                   
+varying vec3 v_lightPosition;
 
 void main(void)
 {
@@ -70,12 +76,12 @@ void main(void)
 
     vec3 nNormal = normalize(v_normal);
 
-    vec3 lightDirection = u_LightPosition - vec3(v_position);
+    vec3 lightDirection = v_lightPosition - vec3(v_position);
     float lightDistance = length(lightDirection);
 
     lightDirection = lightDirection / lightDistance;
 
-    float attenuation = 1.0 / (u_Attenuation[0] + u_Attenuation[1] * lightDistance + u_Attenuation[2] * lightDistance * lightDistance);
+    float attenuation = 1.0 / (c_Attenuation[0] + c_Attenuation[1] * lightDistance + c_Attenuation[2] * lightDistance * lightDistance);
 
     vec3 halfVector = normalize(lightDirection + vec3(0.0, 0.0, 1.0));
 
@@ -102,12 +108,10 @@ void main(void)
     effect.anchors = GLKVector2Make(-1.0f, 1.0f);
     
     effect.waveCount = 8.0f;
-    effect.waveAmplitude = 0.1f;
+    effect.waveAmplitude = 0.05f;
     effect.waveVelocity = 0.8f;
     
-    effect.lightPosition = GLKVector3Make(0.0f, 1.0f, 6.0f);
-    effect.lightAttenuation = GLKVector3Make(1.0f, 0.02f, 0.017f);
-    
+    effect.lightOffset = GLKVector3Make(0.0f, 1.0f, 4.0f);
     effect.ambientLight = GLKVector3Make(1.0f, 1.0f, 1.0f);
     effect.diffuseLight = GLKVector3Make(1.0f, 1.0f, 1.0f);
     effect.specularLight = GLKVector3Make(0.6f, 0.6f, 0.6f);
@@ -116,6 +120,15 @@ void main(void)
     effect.mvUniform = @"u_MVMatrix";
         
     return effect;
+}
+
+- (void)setAnchors:(GLKVector2)anchors
+{
+    if ( anchors.x == anchors.y ) {
+        anchors.y = anchors.x + 0.001;
+    }
+    
+    _anchors = anchors;
 }
 
 - (BOOL)link
@@ -137,11 +150,10 @@ void main(void)
     glUniform1f([self uniformLoc:@"u_Velocity"] , _waveVelocity);
 
     
-    glUniform3fv([self uniformLoc:@"u_LightPosition"], 1, _lightPosition.v);
+    glUniform3fv([self uniformLoc:@"u_LightOffset"], 1, _lightOffset.v);
     glUniform3fv([self uniformLoc:@"u_Ambient"], 1, _ambientLight.v);
     glUniform3fv([self uniformLoc:@"u_Diffuse"], 1, _diffuseLight.v);
     glUniform3fv([self uniformLoc:@"u_Specular"], 1, _specularLight.v);
-    glUniform3fv([self uniformLoc:@"u_Attenuation"], 1, _lightAttenuation.v);
     
     glUniform1f([self uniformLoc:@"u_Time"], CACurrentMediaTime());
 }
