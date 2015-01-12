@@ -7,7 +7,7 @@
 
 #import <GLKit/GLKMath.h>
 
-@interface RZTransform3D : NSObject
+@interface RZTransform3D : NSObject <NSCopying>
 
 @property (nonatomic, assign) GLKVector3 translation;
 @property (nonatomic, assign) GLKQuaternion rotation;

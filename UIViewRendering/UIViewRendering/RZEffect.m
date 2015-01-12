@@ -109,7 +109,7 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
 
 - (void)use
 {
-    glUseProgram(self.name);
+    glUseProgram(_name);
 }
 
 - (void)prepareToDraw
@@ -118,17 +118,17 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
         
     if ( _mvpMatrixLoc >= 0 )
     {
-        GLKMatrix4 mvpMatrix = GLKMatrix4Multiply(self.projectionMatrix, self.modelViewMatrix);
+        GLKMatrix4 mvpMatrix = GLKMatrix4Multiply(_projectionMatrix, _modelViewMatrix);
         glUniformMatrix4fv(_mvpMatrixLoc, 1, GL_FALSE, mvpMatrix.m);
     }
     
     if ( _mvMatrixLoc >= 0 ) {
-        glUniformMatrix4fv(_mvMatrixLoc, 1, GL_FALSE, self.modelViewMatrix.m);
+        glUniformMatrix4fv(_mvMatrixLoc, 1, GL_FALSE, _modelViewMatrix.m);
     }
     
     if ( _normalMatrixLoc >= 0 )
     {
-        glUniformMatrix3fv(_normalMatrixLoc, 1, GL_FALSE, self.normalMatrix.m);
+        glUniformMatrix3fv(_normalMatrixLoc, 1, GL_FALSE, _normalMatrix.m);
     }
 }
 
@@ -141,7 +141,7 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
         loc = cachedLoc.intValue;
     }
     else {
-        loc = glGetUniformLocation(self.name, [uniformName UTF8String]);
+        loc = glGetUniformLocation(_name, [uniformName UTF8String]);
         
         if ( loc != -1 ) {
             [self.uniforms setObject:@(loc) forKey:uniformName];

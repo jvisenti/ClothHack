@@ -15,6 +15,8 @@
 
 @implementation RZTransform3D
 
+#pragma mark - lifecycle
+
 + (instancetype)transform
 {
     return [[[self class] alloc] init];
@@ -29,6 +31,8 @@
 {
     [self invalidateModelMatrixCache];
 }
+
+#pragma mark - public methods
 
 - (GLKMatrix4)modelMatrix
 {
@@ -67,6 +71,19 @@
 {
     _rotation = rotation;
     [self invalidateModelMatrixCache];
+}
+
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    RZTransform3D *copy = [[[self class] alloc] init];
+    
+    copy.translation = _translation;
+    copy.rotation = _rotation;
+    copy.scale = _scale;
+    
+    return copy;
 }
 
 #pragma mark - private methods

@@ -15,6 +15,7 @@
 #import "RZQuadMesh.h"
 #import "RZTransform3D.h"
 #import "RZClothEffect.h"
+#import "RZCamera.h"
 
 @interface ViewController () <GLKViewDelegate>
 
@@ -89,9 +90,10 @@
     transform.scale = GLKVector3Make(aspectRatio, 1.0f, aspectRatio);
     transform.rotation = GLKQuaternionMake(-0.133518726, 0.259643972, 0.0340433009, 0.955821096);
 
-    self.effect.modelViewMatrix = transform.modelMatrix;
+    RZCamera *cam = [RZCamera cameraWithFieldOfView:GLKMathDegreesToRadians(30.0f) aspectRatio:aspectRatio nearClipping:0.01f farClipping:10.0f];
     
-    self.effect.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(30.0f), aspectRatio, 0.01f, 10.0f);
+    self.effect.modelViewMatrix = GLKMatrix4Multiply(cam.viewMatrix, transform.modelMatrix);
+    self.effect.projectionMatrix = cam.projectionMatrix;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
