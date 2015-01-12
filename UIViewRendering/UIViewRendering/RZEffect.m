@@ -17,6 +17,9 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
     GLint _normalMatrixLoc;
 }
 
+@property (strong, nonatomic) NSString *vshSrc;
+@property (strong, nonatomic) NSString *fshSrc;
+
 @property (nonatomic, readwrite, getter = isLinked) BOOL linked;
 
 @property (nonatomic, strong) NSCache *uniforms;
@@ -24,6 +27,8 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
 @end
 
 @implementation RZEffect
+
+#pragma mark - lifecycle
 
 + (instancetype)effectWithVertexShaderNamed:(NSString *)vshName fragmentShaderNamed:(NSString *)fshName
 {
@@ -54,16 +59,32 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
 
 + (instancetype)effectWithVertexShader:(NSString *)vsh fragmentShader:(NSString *)fsh
 {
-    RZEffect *effect = nil;
-    
+    return [[self alloc] initWithVertexShader:vsh fragmentShader:fsh];
+}
+
+- (void)dealloc
+{
+    glDeleteProgram(_name);
+}
+
+#pragma mark - public methods
+
+- (void)createProgram
+{
     if ( [EAGLContext currentContext] != nil ) {
-        effect = [[self alloc] initWithVertexShader:vsh fragmentShader:fsh];
+        glDeleteProgram(_name);
+        
+        GLuint vs = RZCompileShader([self.vshSrc UTF8String], GL_VERTEX_SHADER);
+        GLuint fs = RZCompileShader([self.fshSrc UTF8String], GL_FRAGMENT_SHADER);
+        
+        _name = glCreateProgram();
+        
+        glAttachShader(_name, vs);
+        glAttachShader(_name, fs);
     }
     else {
-        NSLog(@"Failed to initialize %@: No active EAGLContext.", NSStringFromClass(self));
+        NSLog(@"Failed to create %@: No active EAGLContext.", NSStringFromClass([self class]));
     }
-    
-    return effect;
 }
 
 - (BOOL)link
@@ -157,13 +178,8 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
 {
     self = [super init];
     if ( self ) {
-        GLuint vs = RZCompileShader([vsh UTF8String], GL_VERTEX_SHADER);
-        GLuint fs = RZCompileShader([fsh UTF8String], GL_FRAGMENT_SHADER);
-        
-        _name = glCreateProgram();
-        
-        glAttachShader(_name, vs);
-        glAttachShader(_name, fs);
+        _vshSrc = vsh;
+        _fshSrc = fsh;
         
         _mvpMatrixLoc = -1;
         _mvMatrixLoc = -1;

@@ -15,20 +15,6 @@
 		D41D85A51A5F703E005C22F9 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D41D85A31A5F703E005C22F9 /* LaunchScreen.xib */; };
 		D41D85B11A5F703F005C22F9 /* UIViewRenderingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D85B01A5F703F005C22F9 /* UIViewRenderingTests.m */; };
 		D41D85BC1A5F7207005C22F9 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D41D85BA1A5F71EC005C22F9 /* GLKit.framework */; };
-		D41D86431A5F7420005C22F9 /* BHGLAnimatedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86231A5F7420005C22F9 /* BHGLAnimatedObject.m */; };
-		D41D86441A5F7420005C22F9 /* BHGLAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86251A5F7420005C22F9 /* BHGLAnimation.m */; };
-		D41D86451A5F7420005C22F9 /* BHGLBasicAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86271A5F7420005C22F9 /* BHGLBasicAnimation.m */; };
-		D41D86461A5F7420005C22F9 /* BHGLCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86291A5F7420005C22F9 /* BHGLCamera.m */; };
-		D41D86471A5F7420005C22F9 /* BHGLCUtils.c in Sources */ = {isa = PBXBuildFile; fileRef = D41D862A1A5F7420005C22F9 /* BHGLCUtils.c */; };
-		D41D86481A5F7420005C22F9 /* BHGLKeyframeAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D862D1A5F7420005C22F9 /* BHGLKeyframeAnimation.m */; };
-		D41D86491A5F7420005C22F9 /* BHGLLight.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D862F1A5F7420005C22F9 /* BHGLLight.m */; };
-		D41D864A1A5F7420005C22F9 /* BHGLMaterial.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86311A5F7420005C22F9 /* BHGLMaterial.m */; };
-		D41D864B1A5F7420005C22F9 /* BHGLMesh.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86341A5F7420005C22F9 /* BHGLMesh.m */; };
-		D41D864C1A5F7420005C22F9 /* BHGLModelNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86361A5F7420005C22F9 /* BHGLModelNode.m */; };
-		D41D864D1A5F7420005C22F9 /* BHGLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86381A5F7420005C22F9 /* BHGLNode.m */; };
-		D41D864E1A5F7420005C22F9 /* BHGLProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D863A1A5F7420005C22F9 /* BHGLProgram.m */; };
-		D41D864F1A5F7420005C22F9 /* BHGLScene.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D863D1A5F7420005C22F9 /* BHGLScene.m */; };
-		D41D86511A5F7420005C22F9 /* BHGLTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = D41D86411A5F7420005C22F9 /* BHGLTexture.m */; };
 		D42343B01A61D4FE00D2CB2D /* RZRenderLoop.m in Sources */ = {isa = PBXBuildFile; fileRef = D42343AF1A61D4FE00D2CB2D /* RZRenderLoop.m */; };
 		D42343B31A61F4C100D2CB2D /* RZQuadMesh.m in Sources */ = {isa = PBXBuildFile; fileRef = D42343B21A61F4C100D2CB2D /* RZQuadMesh.m */; };
 		D42423661A630B1800BF21DF /* RZTransform3D.m in Sources */ = {isa = PBXBuildFile; fileRef = D42423651A630B1800BF21DF /* RZTransform3D.m */; };
@@ -64,38 +50,6 @@
 		D41D85AF1A5F703F005C22F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D41D85B01A5F703F005C22F9 /* UIViewRenderingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIViewRenderingTests.m; sourceTree = "<group>"; };
 		D41D85BA1A5F71EC005C22F9 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
-		D41D86211A5F7420005C22F9 /* BHGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGL.h; path = BHGL/BHGL.h; sourceTree = "<group>"; };
-		D41D86221A5F7420005C22F9 /* BHGLAnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLAnimatedObject.h; path = BHGL/BHGLAnimatedObject.h; sourceTree = "<group>"; };
-		D41D86231A5F7420005C22F9 /* BHGLAnimatedObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLAnimatedObject.m; path = BHGL/BHGLAnimatedObject.m; sourceTree = "<group>"; };
-		D41D86241A5F7420005C22F9 /* BHGLAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLAnimation.h; path = BHGL/BHGLAnimation.h; sourceTree = "<group>"; };
-		D41D86251A5F7420005C22F9 /* BHGLAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLAnimation.m; path = BHGL/BHGLAnimation.m; sourceTree = "<group>"; };
-		D41D86261A5F7420005C22F9 /* BHGLBasicAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLBasicAnimation.h; path = BHGL/BHGLBasicAnimation.h; sourceTree = "<group>"; };
-		D41D86271A5F7420005C22F9 /* BHGLBasicAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLBasicAnimation.m; path = BHGL/BHGLBasicAnimation.m; sourceTree = "<group>"; };
-		D41D86281A5F7420005C22F9 /* BHGLCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLCamera.h; path = BHGL/BHGLCamera.h; sourceTree = "<group>"; };
-		D41D86291A5F7420005C22F9 /* BHGLCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLCamera.m; path = BHGL/BHGLCamera.m; sourceTree = "<group>"; };
-		D41D862A1A5F7420005C22F9 /* BHGLCUtils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = BHGLCUtils.c; path = BHGL/BHGLCUtils.c; sourceTree = "<group>"; };
-		D41D862B1A5F7420005C22F9 /* BHGLCUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLCUtils.h; path = BHGL/BHGLCUtils.h; sourceTree = "<group>"; };
-		D41D862C1A5F7420005C22F9 /* BHGLKeyframeAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLKeyframeAnimation.h; path = BHGL/BHGLKeyframeAnimation.h; sourceTree = "<group>"; };
-		D41D862D1A5F7420005C22F9 /* BHGLKeyframeAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLKeyframeAnimation.m; path = BHGL/BHGLKeyframeAnimation.m; sourceTree = "<group>"; };
-		D41D862E1A5F7420005C22F9 /* BHGLLight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLLight.h; path = BHGL/BHGLLight.h; sourceTree = "<group>"; };
-		D41D862F1A5F7420005C22F9 /* BHGLLight.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLLight.m; path = BHGL/BHGLLight.m; sourceTree = "<group>"; };
-		D41D86301A5F7420005C22F9 /* BHGLMaterial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLMaterial.h; path = BHGL/BHGLMaterial.h; sourceTree = "<group>"; };
-		D41D86311A5F7420005C22F9 /* BHGLMaterial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLMaterial.m; path = BHGL/BHGLMaterial.m; sourceTree = "<group>"; };
-		D41D86321A5F7420005C22F9 /* BHGLMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLMath.h; path = BHGL/BHGLMath.h; sourceTree = "<group>"; };
-		D41D86331A5F7420005C22F9 /* BHGLMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLMesh.h; path = BHGL/BHGLMesh.h; sourceTree = "<group>"; };
-		D41D86341A5F7420005C22F9 /* BHGLMesh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLMesh.m; path = BHGL/BHGLMesh.m; sourceTree = "<group>"; };
-		D41D86351A5F7420005C22F9 /* BHGLModelNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLModelNode.h; path = BHGL/BHGLModelNode.h; sourceTree = "<group>"; };
-		D41D86361A5F7420005C22F9 /* BHGLModelNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLModelNode.m; path = BHGL/BHGLModelNode.m; sourceTree = "<group>"; };
-		D41D86371A5F7420005C22F9 /* BHGLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLNode.h; path = BHGL/BHGLNode.h; sourceTree = "<group>"; };
-		D41D86381A5F7420005C22F9 /* BHGLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLNode.m; path = BHGL/BHGLNode.m; sourceTree = "<group>"; };
-		D41D86391A5F7420005C22F9 /* BHGLProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLProgram.h; path = BHGL/BHGLProgram.h; sourceTree = "<group>"; };
-		D41D863A1A5F7420005C22F9 /* BHGLProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLProgram.m; path = BHGL/BHGLProgram.m; sourceTree = "<group>"; };
-		D41D863B1A5F7420005C22F9 /* BHGLRenderedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLRenderedObject.h; path = BHGL/BHGLRenderedObject.h; sourceTree = "<group>"; };
-		D41D863C1A5F7420005C22F9 /* BHGLScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLScene.h; path = BHGL/BHGLScene.h; sourceTree = "<group>"; };
-		D41D863D1A5F7420005C22F9 /* BHGLScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLScene.m; path = BHGL/BHGLScene.m; sourceTree = "<group>"; };
-		D41D86401A5F7420005C22F9 /* BHGLTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLTexture.h; path = BHGL/BHGLTexture.h; sourceTree = "<group>"; };
-		D41D86411A5F7420005C22F9 /* BHGLTexture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BHGLTexture.m; path = BHGL/BHGLTexture.m; sourceTree = "<group>"; };
-		D41D86421A5F7420005C22F9 /* BHGLTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BHGLTypes.h; path = BHGL/BHGLTypes.h; sourceTree = "<group>"; };
 		D42343AE1A61D4FE00D2CB2D /* RZRenderLoop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RZRenderLoop.h; sourceTree = "<group>"; };
 		D42343AF1A61D4FE00D2CB2D /* RZRenderLoop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RZRenderLoop.m; sourceTree = "<group>"; };
 		D42343B11A61F4C100D2CB2D /* RZQuadMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RZQuadMesh.h; sourceTree = "<group>"; };
@@ -136,7 +90,6 @@
 		D41D85881A5F703E005C22F9 = {
 			isa = PBXGroup;
 			children = (
-				D41D85EF1A5F7307005C22F9 /* BHGL */,
 				D41D85931A5F703E005C22F9 /* UIViewRendering */,
 				D41D85AD1A5F703F005C22F9 /* UIViewRenderingTests */,
 				D41D85921A5F703E005C22F9 /* Products */,
@@ -208,45 +161,6 @@
 				D41D85AF1A5F703F005C22F9 /* Info.plist */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		D41D85EF1A5F7307005C22F9 /* BHGL */ = {
-			isa = PBXGroup;
-			children = (
-				D41D86211A5F7420005C22F9 /* BHGL.h */,
-				D41D86221A5F7420005C22F9 /* BHGLAnimatedObject.h */,
-				D41D86231A5F7420005C22F9 /* BHGLAnimatedObject.m */,
-				D41D86241A5F7420005C22F9 /* BHGLAnimation.h */,
-				D41D86251A5F7420005C22F9 /* BHGLAnimation.m */,
-				D41D86261A5F7420005C22F9 /* BHGLBasicAnimation.h */,
-				D41D86271A5F7420005C22F9 /* BHGLBasicAnimation.m */,
-				D41D86281A5F7420005C22F9 /* BHGLCamera.h */,
-				D41D86291A5F7420005C22F9 /* BHGLCamera.m */,
-				D41D862A1A5F7420005C22F9 /* BHGLCUtils.c */,
-				D41D862B1A5F7420005C22F9 /* BHGLCUtils.h */,
-				D41D862C1A5F7420005C22F9 /* BHGLKeyframeAnimation.h */,
-				D41D862D1A5F7420005C22F9 /* BHGLKeyframeAnimation.m */,
-				D41D862E1A5F7420005C22F9 /* BHGLLight.h */,
-				D41D862F1A5F7420005C22F9 /* BHGLLight.m */,
-				D41D86301A5F7420005C22F9 /* BHGLMaterial.h */,
-				D41D86311A5F7420005C22F9 /* BHGLMaterial.m */,
-				D41D86321A5F7420005C22F9 /* BHGLMath.h */,
-				D41D86331A5F7420005C22F9 /* BHGLMesh.h */,
-				D41D86341A5F7420005C22F9 /* BHGLMesh.m */,
-				D41D86351A5F7420005C22F9 /* BHGLModelNode.h */,
-				D41D86361A5F7420005C22F9 /* BHGLModelNode.m */,
-				D41D86371A5F7420005C22F9 /* BHGLNode.h */,
-				D41D86381A5F7420005C22F9 /* BHGLNode.m */,
-				D41D86391A5F7420005C22F9 /* BHGLProgram.h */,
-				D41D863A1A5F7420005C22F9 /* BHGLProgram.m */,
-				D41D863B1A5F7420005C22F9 /* BHGLRenderedObject.h */,
-				D41D863C1A5F7420005C22F9 /* BHGLScene.h */,
-				D41D863D1A5F7420005C22F9 /* BHGLScene.m */,
-				D41D86401A5F7420005C22F9 /* BHGLTexture.h */,
-				D41D86411A5F7420005C22F9 /* BHGLTexture.m */,
-				D41D86421A5F7420005C22F9 /* BHGLTypes.h */,
-			);
-			name = BHGL;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -349,31 +263,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D41D86451A5F7420005C22F9 /* BHGLBasicAnimation.m in Sources */,
-				D41D864F1A5F7420005C22F9 /* BHGLScene.m in Sources */,
-				D41D864C1A5F7420005C22F9 /* BHGLModelNode.m in Sources */,
-				D41D864E1A5F7420005C22F9 /* BHGLProgram.m in Sources */,
-				D41D864D1A5F7420005C22F9 /* BHGLNode.m in Sources */,
-				D41D86481A5F7420005C22F9 /* BHGLKeyframeAnimation.m in Sources */,
 				D44E88AC1A631E5500D651D1 /* RZEffectView.m in Sources */,
-				D41D86461A5F7420005C22F9 /* BHGLCamera.m in Sources */,
 				D42423661A630B1800BF21DF /* RZTransform3D.m in Sources */,
 				D42343B31A61F4C100D2CB2D /* RZQuadMesh.m in Sources */,
-				D41D864B1A5F7420005C22F9 /* BHGLMesh.m in Sources */,
 				D42423691A63172200BF21DF /* RZCamera.m in Sources */,
-				D41D86441A5F7420005C22F9 /* BHGLAnimation.m in Sources */,
 				D41D859D1A5F703E005C22F9 /* ViewController.m in Sources */,
 				D42DC4AC1A62C0D70067B97E /* RZEffect.m in Sources */,
-				D41D864A1A5F7420005C22F9 /* BHGLMaterial.m in Sources */,
 				D42F54A51A62D0790026F391 /* RZClothEffect.m in Sources */,
 				D41D859A1A5F703E005C22F9 /* AppDelegate.m in Sources */,
 				D48BFBB41A60251A002A26F0 /* RZViewTexture.m in Sources */,
-				D41D86431A5F7420005C22F9 /* BHGLAnimatedObject.m in Sources */,
-				D41D86471A5F7420005C22F9 /* BHGLCUtils.c in Sources */,
-				D41D86511A5F7420005C22F9 /* BHGLTexture.m in Sources */,
 				D41D85971A5F703E005C22F9 /* main.m in Sources */,
 				D42343B01A61D4FE00D2CB2D /* RZRenderLoop.m in Sources */,
-				D41D86491A5F7420005C22F9 /* BHGLLight.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

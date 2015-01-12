@@ -27,6 +27,8 @@
 @property (strong, nonatomic) RZViewTexture *viewTexture;
 @property (strong, nonatomic) RZQuadMesh *viewMesh;
 
+@property (assign, nonatomic) BOOL textureLoaded;
+
 @end
 
 @implementation RZEffectView
@@ -96,16 +98,20 @@
 {
     [super setFrame:frame];
     
-    [EAGLContext setCurrentContext:self.context];
-    [self updateBuffers];
+    if ( self.context != nil ) {
+        [EAGLContext setCurrentContext:self.context];
+        [self updateBuffers];
+    }
 }
 
 - (void)setBounds:(CGRect)bounds
 {
     [super setBounds:bounds];
     
-    [EAGLContext setCurrentContext:self.context];
-    [self updateBuffers];
+    if ( self.context != nil ) {
+        [EAGLContext setCurrentContext:self.context];
+        [self updateBuffers];
+    }
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
@@ -135,6 +141,13 @@
 {
     _framesPerSecond = framesPerSecond;
     self.renderLoop.preferredFPS = framesPerSecond;
+}
+
+- (void)setEffect:(RZEffect *)effect
+{
+    [EAGLContext setCurrentContext:self.context];
+    
+    [self _setEffect:effect];
 }
 
 - (void)setNeedsDisplay
@@ -170,7 +183,11 @@
     
     self.context = [[self class] bestContext];
     
+    self.effectTransform = [RZTransform3D transform];
+    
     if ( [EAGLContext setCurrentContext:self.context] ) {
+        [self updateBuffers];
+        [self _setEffect:self.effect];
         
         self.renderLoop = [RZRenderLoop renderLoop];
         [self.renderLoop setUpdateTarget:self action:@selector(update:)];
@@ -193,8 +210,17 @@
         self.viewMesh = [RZQuadMesh quadWithSubdivisionLevel:5];
         
         self.viewTexture = [RZViewTexture textureWithSize:self.backingView.bounds.size];
-        glBindTexture(GL_TEXTURE_2D, self.viewTexture.name);
     }
+}
+
+- (void)_setEffect:(RZEffect *)effect
+{
+    glDeleteProgram(self.effect.name);
+    
+    [effect createProgram];
+    [effect link];
+    
+    _effect = effect;
 }
 
 - (void)createBuffers
@@ -248,31 +274,37 @@
 {
     [EAGLContext setCurrentContext:self.context];
     
-    CGColorRef cgColor = color.CGColor;
-    const CGFloat *comps = CGColorGetComponents(cgColor);
-    
-    size_t numComps = CGColorGetNumberOfComponents(cgColor);
-    CGFloat r, g, b, a;
-    
-    if ( numComps == 2) {
+    if ( color != nil ) {
+        CGColorRef cgColor = color.CGColor;
         const CGFloat *comps = CGColorGetComponents(cgColor);
-        r = b = g = comps[0];
-        a = comps[1];
+        
+        size_t numComps = CGColorGetNumberOfComponents(cgColor);
+        CGFloat r, g, b, a;
+        
+        if ( numComps == 2 ) {
+            const CGFloat *comps = CGColorGetComponents(cgColor);
+            r = b = g = comps[0];
+            a = comps[1];
+        }
+        else if ( numComps == 4 ) {
+            r = comps[0];
+            g = comps[1];
+            b = comps[2];
+            a = comps[3];
+        }
+        
+        glClearColor(r, g, b, a);
     }
     else {
-        r = comps[0];
-        g = comps[1];
-        b = comps[2];
-        a = comps[3];
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
-    
-    glClearColor(r, g, b, a);
 }
 
 - (void)update:(CFTimeInterval)dt
 {
-    if ( self.isDynamic ) {
+    if ( self.isDynamic || !self.textureLoaded ) {
         [self.viewTexture updateWithView:self.backingView synchronous:NO];
+        self.textureLoaded = YES;
     }
 }
 
@@ -281,6 +313,9 @@
     [EAGLContext setCurrentContext:self.context];
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, self.viewTexture.name);
     
     GLKMatrix4 model, view, projection;
     
@@ -302,7 +337,7 @@
     
     self.effect.modelViewMatrix = GLKMatrix4Multiply(view, model);
     self.effect.projectionMatrix = projection;
-    
+
     [self.effect prepareToDraw];
     
     [self display];

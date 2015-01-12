@@ -56,13 +56,8 @@ void RZGenerateQuadMesh(GLubyte subdivisions, GLvoid **vertices, GLuint *numVert
     free(_vertexData);
     free(_indexData);
     
-    GLuint vao = _vao;
-    RZBufferSet bs = _bufferSet;
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        glDeleteVertexArraysOES(1, &vao);
-        glDeleteBuffers(2, &bs.vbo);
-    });
+    glDeleteVertexArraysOES(1, &_vao);
+    glDeleteBuffers(2, &_bufferSet.vbo);
 }
 
 #pragma mark - public methods

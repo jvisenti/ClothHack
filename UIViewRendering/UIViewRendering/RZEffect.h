@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKMath.h>
 
+#define RZ_SHADER_SRC(src) (@#src)
+
 @interface RZEffect : NSObject
 
 @property (assign, nonatomic, readonly) GLuint name;
@@ -24,6 +26,8 @@
 + (instancetype)effectWithVertexShaderNamed:(NSString *)vshName fragmentShaderNamed:(NSString *)fshName;
 
 + (instancetype)effectWithVertexShader:(NSString *)vsh fragmentShader:(NSString *)fsh;
+
+- (void)createProgram;
 
 - (BOOL)link;
 

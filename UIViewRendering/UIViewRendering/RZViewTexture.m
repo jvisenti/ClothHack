@@ -38,10 +38,7 @@
     CGContextRelease(_context);
     
     if ( _name != 0 ) {
-        GLuint n = _name;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            glDeleteTextures(1, &n);
-        });
+        glDeleteTextures(1, &_name);
     }
 }
 
