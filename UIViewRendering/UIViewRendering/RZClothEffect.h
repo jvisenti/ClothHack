@@ -9,7 +9,7 @@
 
 @interface RZClothEffect : RZEffect
 
-+ (instancetype)clothEffect;
++ (instancetype)effect;
 
 @property (assign, nonatomic) GLKVector2 anchors;
 

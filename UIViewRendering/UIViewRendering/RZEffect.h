@@ -23,6 +23,8 @@
 @property (nonatomic, copy) NSString *mvUniform;
 @property (nonatomic, copy) NSString *normalMatrixUniform;
 
+@property (nonatomic, assign) NSInteger requiredLevelOfDetail;
+
 + (instancetype)effectWithVertexShaderNamed:(NSString *)vshName fragmentShaderNamed:(NSString *)fshName;
 
 + (instancetype)effectWithVertexShader:(NSString *)vsh fragmentShader:(NSString *)fsh;

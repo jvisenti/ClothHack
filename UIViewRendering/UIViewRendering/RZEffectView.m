@@ -49,7 +49,7 @@
         _dynamic = dynamic;
         
         [self commonInit];
-        [self createViewObjects];
+        [self createTexture];
     }
     return self;
 }
@@ -68,7 +68,7 @@
 {
     [super awakeFromNib];
     
-    [self createViewObjects];
+    [self createTexture];
 }
 
 - (void)dealloc
@@ -215,13 +215,10 @@
     }
 }
 
-- (void)createViewObjects
+- (void)createTexture
 {
     if ( self.backingView != nil ) {
         [EAGLContext setCurrentContext:self.context];
-        
-        self.viewMesh = [RZQuadMesh quadWithSubdivisionLevel:5];
-        
         self.viewTexture = [RZViewTexture textureWithSize:self.backingView.bounds.size];
     }
 }
@@ -231,9 +228,18 @@
     glDeleteProgram(self.effect.name);
     
     [effect createProgram];
-    [effect link];
     
-    _effect = effect;
+    if ( [effect link] ) {
+        if ( self.backingView != nil ) {
+            self.viewMesh = [RZQuadMesh quadWithSubdivisionLevel:effect.requiredLevelOfDetail];
+        }
+        
+        _effect = effect;
+    }
+    else {
+        self.viewMesh = nil;
+        _effect = nil;
+    }
 }
 
 - (void)createBuffers

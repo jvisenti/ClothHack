@@ -101,9 +101,11 @@ void main(void)
 
 @implementation RZClothEffect
 
-+ (instancetype)clothEffect
++ (instancetype)effect
 {
     RZClothEffect *effect = [super effectWithVertexShader:kRZClothVSH fragmentShader:kRZClothFSH];
+    
+    effect.requiredLevelOfDetail = 6;
     
     effect.anchors = GLKVector2Make(-1.0f, 1.0f);
     

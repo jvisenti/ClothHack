@@ -43,9 +43,7 @@
 }
 
 - (void)updateWithView:(UIView *)view synchronous:(BOOL)synchronous
-{
-    NSAssert(CGSizeEqualToSize(view.bounds.size, _size), @"%@ view must match texture size!", NSStringFromClass([self class]));
-    
+{    
     if ( _name == 0 ) {
         [self generateTextureOnMainThread];
     }

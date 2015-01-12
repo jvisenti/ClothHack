@@ -47,7 +47,9 @@
     [super viewDidLayoutSubviews];
     
     if ( self.effectView == nil ) {
-        self.effect = [RZClothEffect clothEffect];
+        self.effect = [RZClothEffect effect];
+        
+//        self.effect.lightOffset = GLKVector3Make(0.0f, 1.1f, -3.0f);
         
         self.effectView = [[RZEffectView alloc] initWithBackingView:self.contentView effect:self.effect dynamicContent:YES];
         self.effectView.backgroundColor = [UIColor blackColor];
