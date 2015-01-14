@@ -72,30 +72,7 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
     return effect;
 }
 
-- (void)dealloc
-{
-    glDeleteProgram(_name);
-}
-
 #pragma mark - public methods
-
-- (void)createProgram
-{
-    if ( [EAGLContext currentContext] != nil ) {
-        glDeleteProgram(_name);
-        
-        GLuint vs = RZCompileShader([self.vshSrc UTF8String], GL_VERTEX_SHADER);
-        GLuint fs = RZCompileShader([self.fshSrc UTF8String], GL_FRAGMENT_SHADER);
-        
-        _name = glCreateProgram();
-        
-        glAttachShader(_name, vs);
-        glAttachShader(_name, fs);
-    }
-    else {
-        NSLog(@"Failed to create %@: No active EAGLContext.", NSStringFromClass([self class]));
-    }
-}
 
 - (BOOL)link
 {
@@ -138,15 +115,10 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
     return self.isLinked;
 }
 
-- (void)use
-{
-    glUseProgram(_name);
-}
-
 - (void)prepareToDraw
 {
-    [self use];
-        
+    [self bindGL];
+    
     if ( _mvpMatrixLoc >= 0 )
     {
         GLKMatrix4 mvpMatrix = GLKMatrix4Multiply(_projectionMatrix, _modelViewMatrix);
@@ -180,6 +152,36 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
     }
     
     return loc;
+}
+
+#pragma mark - RZOpenGLObject
+
+- (void)setupGL
+{
+    if ( [EAGLContext currentContext] != nil ) {
+        [self teardownGL];
+        
+        GLuint vs = RZCompileShader([self.vshSrc UTF8String], GL_VERTEX_SHADER);
+        GLuint fs = RZCompileShader([self.fshSrc UTF8String], GL_FRAGMENT_SHADER);
+        
+        _name = glCreateProgram();
+        
+        glAttachShader(_name, vs);
+        glAttachShader(_name, fs);
+    }
+    else {
+        NSLog(@"Failed to setup %@: No active EAGLContext.", NSStringFromClass([self class]));
+    }
+}
+
+- (void)bindGL
+{
+    glUseProgram(_name);
+}
+
+- (void)teardownGL
+{
+    glDeleteProgram(_name);
 }
 
 #pragma mark - private methods

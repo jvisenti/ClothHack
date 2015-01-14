@@ -81,22 +81,59 @@ void RZGenerateQuadMesh(NSInteger subdivisions, GLvoid **vertices, GLuint *numVe
     }
     
     dispatch_semaphore_signal(s_Semaphore);
+}
+
+#pragma mark - RZOpenGLObject
+
+- (void)setupGL
+{
+    [self teardownGL];
     
+    glGenVertexArraysOES(1, &_vao);
+    glGenBuffers(2, &_bufferSet.vbo);
+    
+    glBindVertexArrayOES(_vao);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, _bufferSet.vbo);
+    glBufferData(GL_ARRAY_BUFFER, 5 * _vertexCount * sizeof(GLfloat), _vertexData, GL_STATIC_DRAW);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bufferSet.ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indexCount * sizeof(GLushort), _indexData, GL_STATIC_DRAW);
+    
+    glEnableVertexAttribArray(kRZVertexAttribPosition);
+    glVertexAttribPointer(kRZVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (const GLvoid *)0);
+    
+    glEnableVertexAttribArray(kRZVertexAttribTexCoord);
+    glVertexAttribPointer(kRZVertexAttribTexCoord, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (const GLvoid *)12);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+- (void)bindGL
+{
+    glBindVertexArrayOES(_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, _bufferSet.vbo);
+}
+
+- (void)teardownGL
+{
     glDeleteVertexArraysOES(1, &_vao);
     glDeleteBuffers(2, &_bufferSet.vbo);
 }
 
-#pragma mark - public methods
+#pragma mark - RZRenderable
 
 - (void)render
 {
-    glBindVertexArrayOES(_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, _bufferSet.vbo);
-    
-    glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, NULL);
-
-    glBindVertexArrayOES(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    if ( _vao != 0 ) {
+        [self bindGL];
+        
+        glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, NULL);
+        
+        glBindVertexArrayOES(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
 }
 
 #pragma mark - private methods
@@ -107,26 +144,6 @@ void RZGenerateQuadMesh(NSInteger subdivisions, GLvoid **vertices, GLuint *numVe
     if ( self ) {
         subdivisions = MAX(0, MIN(subdivisions, kRZQuadMeshMaxSubdivisions));
         RZGenerateQuadMesh(subdivisions, &_vertexData, &_vertexCount, &_indexData, &_indexCount);
-
-        glGenVertexArraysOES(1, &_vao);
-        glGenBuffers(2, &_bufferSet.vbo);
-        
-        glBindVertexArrayOES(_vao);
-        
-        glBindBuffer(GL_ARRAY_BUFFER, _bufferSet.vbo);
-        glBufferData(GL_ARRAY_BUFFER, 5 * _vertexCount * sizeof(GLfloat), _vertexData, GL_STATIC_DRAW);
-        
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bufferSet.ibo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indexCount * sizeof(GLushort), _indexData, GL_STATIC_DRAW);
-        
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (const GLvoid *)0);
-        
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (const GLvoid *)12);
-        
-        glBindVertexArrayOES(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         _subdivisions = subdivisions;
     }

@@ -5,16 +5,13 @@
 //  Copyright (c) 2015 Raizlabs. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <OpenGLES/gltypes.h>
+#import "RZEffects.h"
 
 OBJC_EXTERN NSInteger const kRZQuadMeshMaxSubdivisions;
 
-@interface RZQuadMesh : NSObject
+@interface RZQuadMesh : NSObject <RZOpenGLObject, RZRenderable>
 
 + (instancetype)quad;
 + (instancetype)quadWithSubdivisionLevel:(NSInteger)subdivisons;
-
-- (void)render;
 
 @end

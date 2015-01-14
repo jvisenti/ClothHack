@@ -36,6 +36,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D41D43421A670B9C0009AD45 /* RZRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RZRenderable.h; sourceTree = "<group>"; };
+		D41D43431A670BBD0009AD45 /* RZOpenGLObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RZOpenGLObject.h; sourceTree = "<group>"; };
+		D41D43441A670C2A0009AD45 /* RZEffects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RZEffects.h; sourceTree = "<group>"; };
 		D41D85911A5F703E005C22F9 /* UIViewRendering.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIViewRendering.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D41D85951A5F703E005C22F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D41D85961A5F703E005C22F9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -128,6 +131,9 @@
 				D42423681A63172200BF21DF /* RZCamera.m */,
 				D44E88AA1A631E5500D651D1 /* RZEffectView.h */,
 				D44E88AB1A631E5500D651D1 /* RZEffectView.m */,
+				D41D43421A670B9C0009AD45 /* RZRenderable.h */,
+				D41D43431A670BBD0009AD45 /* RZOpenGLObject.h */,
+				D41D43441A670C2A0009AD45 /* RZEffects.h */,
 				D41D859E1A5F703E005C22F9 /* Main.storyboard */,
 				D41D85A31A5F703E005C22F9 /* LaunchScreen.xib */,
 				D41D85A11A5F703E005C22F9 /* Images.xcassets */,

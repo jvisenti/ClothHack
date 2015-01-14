@@ -225,18 +225,21 @@
 
 - (void)_setEffect:(RZEffect *)effect
 {
-    glDeleteProgram(self.effect.name);
+    [_effect teardownGL];
     
-    [effect createProgram];
+    [effect setupGL];
     
     if ( [effect link] ) {
         if ( self.backingView != nil ) {
+            [self.viewMesh teardownGL];
             self.viewMesh = [RZQuadMesh quadWithSubdivisionLevel:effect.preferredLevelOfDetail];
+            [self.viewMesh setupGL];
         }
         
         _effect = effect;
     }
     else {
+        [self.viewMesh teardownGL];
         self.viewMesh = nil;
         _effect = nil;
     }

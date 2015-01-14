@@ -5,12 +5,12 @@
 //  Copyright (c) 2015 Raizlabs. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "RZEffects.h"
 #import <GLKit/GLKMath.h>
 
 #define RZ_SHADER_SRC(src) (@#src)
 
-@interface RZEffect : NSObject
+@interface RZEffect : NSObject <RZOpenGLObject>
 
 @property (assign, nonatomic, readonly) GLuint name;
 @property (nonatomic, readonly, getter = isLinked) BOOL linked;
@@ -29,11 +29,8 @@
 
 + (instancetype)effectWithVertexShader:(NSString *)vsh fragmentShader:(NSString *)fsh;
 
-- (void)createProgram;
-
 - (BOOL)link;
 
-- (void)use;
 - (void)prepareToDraw;
 
 - (GLint)uniformLoc:(NSString *)uniformName;
