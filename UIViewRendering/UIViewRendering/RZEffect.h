@@ -12,7 +12,6 @@
 
 @interface RZEffect : NSObject <RZOpenGLObject>
 
-@property (assign, nonatomic, readonly) GLuint name;
 @property (nonatomic, readonly, getter = isLinked) BOOL linked;
 
 @property (nonatomic, assign) GLKMatrix4 modelViewMatrix;
@@ -33,6 +32,7 @@
 
 - (void)prepareToDraw;
 
+- (void)bindAttribute:(NSString *)attribute location:(GLuint)location;
 - (GLint)uniformLoc:(NSString *)uniformName;
 
 @end

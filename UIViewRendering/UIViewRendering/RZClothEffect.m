@@ -135,8 +135,8 @@ void main(void)
 
 - (BOOL)link
 {
-    glBindAttribLocation(self.name, 0, "a_position");
-    glBindAttribLocation(self.name, 1, "a_texCoord0");
+    [self bindAttribute:@"a_position" location:kRZVertexAttribPosition];
+    [self bindAttribute:@"a_texCoord0" location:kRZVertexAttribTexCoord];
     
     return [super link];
 }

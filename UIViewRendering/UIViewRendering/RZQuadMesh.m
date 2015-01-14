@@ -118,22 +118,22 @@ void RZGenerateQuadMesh(NSInteger subdivisions, GLvoid **vertices, GLuint *numVe
 
 - (void)teardownGL
 {
-    glDeleteVertexArraysOES(1, &_vao);
-    glDeleteBuffers(2, &_bufferSet.vbo);
+    if ( _vao != 0 ) {
+        glDeleteVertexArraysOES(1, &_vao);
+        glDeleteBuffers(2, &_bufferSet.vbo);
+    }
 }
 
 #pragma mark - RZRenderable
 
 - (void)render
 {
-    if ( _vao != 0 ) {
-        [self bindGL];
-        
-        glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, NULL);
-        
-        glBindVertexArrayOES(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
+    [self bindGL];
+    
+    glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, NULL);
+    
+    glBindVertexArrayOES(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 #pragma mark - private methods

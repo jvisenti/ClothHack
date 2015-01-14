@@ -9,6 +9,8 @@
 #import "RZViewTexture.h"
 
 @interface RZViewTexture () {
+    GLuint _name;
+    
     GLsizei _texWidth;
     GLsizei _texHeight;
     
@@ -36,18 +38,10 @@
 - (void)dealloc
 {
     CGContextRelease(_context);
-    
-    if ( _name != 0 ) {
-        glDeleteTextures(1, &_name);
-    }
 }
 
 - (void)updateWithView:(UIView *)view synchronous:(BOOL)synchronous
-{    
-    if ( _name == 0 ) {
-        [self generateTextureOnMainThread];
-    }
-    
+{
     if ( synchronous ) {
         [self renderView:view];
         [self updateTextureOnMainThread];
@@ -61,6 +55,32 @@
             [self updateTextureOnMainThread];
         });
     }
+}
+
+#pragma mark - RZOpenGLObject
+
+- (void)setupGL
+{
+    glGenTextures(1, &_name);
+    glBindTexture(GL_TEXTURE_2D, _name);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _texWidth, _texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, _pixData);
+    
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+- (void)bindGL
+{
+    glBindTexture(GL_TEXTURE_2D, _name);
+}
+
+- (void)teardownGL
+{
+    glDeleteTextures(1, &_name);
 }
 
 #pragma mark - private methods
@@ -90,29 +110,6 @@
         _renderSemaphore = dispatch_semaphore_create(1);
     }
     return self;
-}
-
-- (void)generateTextureOnMainThread
-{
-    void (^genBlock)() = ^{
-        glGenTextures(1, &_name);
-        glBindTexture(GL_TEXTURE_2D, _name);
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _texWidth, _texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, _pixData);
-        
-        glBindTexture(GL_TEXTURE_2D, 0);
-    };
-    
-    if ( [NSThread isMainThread] ) {
-        genBlock();
-    }
-    else {
-        dispatch_async(dispatch_get_main_queue(), genBlock);
-    }
 }
 
 - (void)renderView:(UIView *)view

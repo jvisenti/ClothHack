@@ -12,6 +12,8 @@
 GLuint RZCompileShader(const GLchar *source, GLenum type);
 
 @interface RZEffect () {
+    GLuint _name;
+    
     GLint _mvpMatrixLoc;
     GLint _mvMatrixLoc;
     GLint _normalMatrixLoc;
@@ -133,6 +135,11 @@ GLuint RZCompileShader(const GLchar *source, GLenum type);
     {
         glUniformMatrix3fv(_normalMatrixLoc, 1, GL_FALSE, _normalMatrix.m);
     }
+}
+
+- (void)bindAttribute:(NSString *)attribute location:(GLuint)location
+{
+    glBindAttribLocation(_name, location, [attribute UTF8String]);
 }
 
 - (GLint)uniformLoc:(NSString *)uniformName

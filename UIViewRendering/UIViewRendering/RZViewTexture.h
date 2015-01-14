@@ -6,11 +6,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <OpenGLES/gltypes.h>
+#import "RZEffects.h"
 
-@interface RZViewTexture : NSObject
+@interface RZViewTexture : NSObject <RZOpenGLObject>
 
-@property (assign, nonatomic, readonly) GLuint name;
 @property (assign, nonatomic, readonly) CGSize size;
 @property (assign, nonatomic, readonly) CGFloat scale;
 
