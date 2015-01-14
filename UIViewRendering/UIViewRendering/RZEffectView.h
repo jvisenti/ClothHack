@@ -11,7 +11,7 @@
 
 @interface RZEffectView : UIView
 
-@property (assign, nonatomic) NSInteger framesPerSecond;
+@property (assign, nonatomic) IBInspectable NSInteger framesPerSecond;
 @property (assign, nonatomic, getter=isPaused) BOOL paused;
 
 @property (strong, nonatomic) RZEffect *effect;

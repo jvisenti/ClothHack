@@ -48,8 +48,8 @@
         _effect = effect;
         _dynamic = dynamic;
         
-        [self commonInit];
-        [self createTexture];
+        [self _commonInit];
+        [self _createTexture];
     }
     return self;
 }
@@ -59,7 +59,7 @@
     self = [super initWithCoder:aDecoder];
     if ( self ) {
         _dynamic = NO;
-        [self commonInit];
+        [self _commonInit];
     }
     return self;
 }
@@ -68,7 +68,7 @@
 {
     [super awakeFromNib];
     
-    [self createTexture];
+    [self _createTexture];
 }
 
 - (void)dealloc
@@ -111,7 +111,7 @@
     
     if ( self.context != nil ) {
         [EAGLContext setCurrentContext:self.context];
-        [self updateBuffers];
+        [self _updateBuffers];
     }
 }
 
@@ -121,7 +121,7 @@
     
     if ( self.context != nil ) {
         [EAGLContext setCurrentContext:self.context];
-        [self updateBuffers];
+        [self _updateBuffers];
     }
 }
 
@@ -130,7 +130,7 @@
     [super setBackgroundColor:backgroundColor];
     
     if ( self.context != nil ) {
-        [self setClearColorWithColor:backgroundColor];
+        [self _setClearColorWithColor:backgroundColor];
     }
 }
 
@@ -184,7 +184,7 @@
     return context;
 }
 
-- (void)commonInit
+- (void)_commonInit
 {
     CAEAGLLayer *glLayer = (CAEAGLLayer *)self.layer;
     glLayer.contentsScale = [UIScreen mainScreen].scale;
@@ -199,53 +199,23 @@
     self.effectTransform = [RZTransform3D transform];
     
     if ( [EAGLContext setCurrentContext:self.context] ) {
-        [self updateBuffers];
+        [self _updateBuffers];
         [self _setEffect:self.effect];
         
         self.renderLoop = [RZRenderLoop renderLoop];
-        [self.renderLoop setUpdateTarget:self action:@selector(update:)];
-        [self.renderLoop setRenderTarget:self action:@selector(render)];
+        [self.renderLoop setUpdateTarget:self action:@selector(_update:)];
+        [self.renderLoop setRenderTarget:self action:@selector(_render)];
 
         self.framesPerSecond = 60;
         
-        [self setClearColorWithColor:self.backgroundColor];
+        [self _setClearColorWithColor:self.backgroundColor];
         
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
     }
 }
 
-- (void)createTexture
-{
-    if ( self.backingView != nil ) {
-        [EAGLContext setCurrentContext:self.context];
-        self.viewTexture = [RZViewTexture textureWithSize:self.backingView.bounds.size];
-    }
-}
-
-- (void)_setEffect:(RZEffect *)effect
-{
-    [_effect teardownGL];
-    
-    [effect setupGL];
-    
-    if ( [effect link] ) {
-        if ( self.backingView != nil ) {
-            [self.viewMesh teardownGL];
-            self.viewMesh = [RZQuadMesh quadWithSubdivisionLevel:effect.preferredLevelOfDetail];
-            [self.viewMesh setupGL];
-        }
-        
-        _effect = effect;
-    }
-    else {
-        [self.viewMesh teardownGL];
-        self.viewMesh = nil;
-        _effect = nil;
-    }
-}
-
-- (void)createBuffers
+- (void)_createBuffers
 {
     glGenFramebuffers(1, &_fbo);
     glGenRenderbuffers(1, &_crb);
@@ -270,18 +240,18 @@
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-- (void)updateBuffers
+- (void)_updateBuffers
 {
-    [self destroyBuffers];
+    [self _destroyBuffers];
     
     if ( CGRectGetWidth(self.bounds) > 0.0f && CGRectGetHeight(self.bounds) > 0.0f ) {
-        [self createBuffers];
+        [self _createBuffers];
     }
     
     glViewport(0, 0, _backingWidth, _backingHeight);
 }
 
-- (void)destroyBuffers
+- (void)_destroyBuffers
 {
     glDeleteFramebuffers(1, &_fbo);
     glDeleteRenderbuffers(1, &_crb);
@@ -295,7 +265,48 @@
     _backingHeight = 0;
 }
 
-- (void)setClearColorWithColor:(UIColor *)color
+- (void)_createTexture
+{
+    if ( self.backingView != nil ) {
+        [EAGLContext setCurrentContext:self.context];
+        [self _setViewTexture:[RZViewTexture textureWithSize:self.backingView.bounds.size]];
+    }
+}
+
+- (void)_setEffect:(RZEffect *)effect
+{
+    [_effect teardownGL];
+    
+    [effect setupGL];
+    
+    if ( [effect link] ) {
+        if ( self.backingView != nil ) {
+            [self _setViewMesh:[RZQuadMesh quadWithSubdivisionLevel:effect.preferredLevelOfDetail]];
+        }
+        
+        _effect = effect;
+    }
+    else {
+        [self _setViewMesh:nil];
+        _effect = nil;
+    }
+}
+
+- (void)_setViewTexture:(RZViewTexture *)viewTexture
+{
+    [_viewTexture teardownGL];
+    _viewTexture = viewTexture;
+    [_viewTexture setupGL];
+}
+
+- (void)_setViewMesh:(RZQuadMesh *)viewMesh
+{
+    [_viewMesh teardownGL];
+    _viewMesh = viewMesh;
+    [_viewMesh setupGL];
+}
+
+- (void)_setClearColorWithColor:(UIColor *)color
 {
     [EAGLContext setCurrentContext:self.context];
     
@@ -325,7 +336,7 @@
     }
 }
 
-- (void)update:(CFTimeInterval)dt
+- (void)_update:(CFTimeInterval)dt
 {
     if ( self.isDynamic || !self.textureLoaded ) {
         [self.viewTexture updateWithView:self.backingView synchronous:NO];
@@ -333,7 +344,7 @@
     }
 }
 
-- (void)render
+- (void)_render
 {
     [EAGLContext setCurrentContext:self.context];
     glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
@@ -341,7 +352,7 @@
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, self.viewTexture.name);
+    [self.viewTexture bindGL];
     
     GLKMatrix4 model, view, projection;
     

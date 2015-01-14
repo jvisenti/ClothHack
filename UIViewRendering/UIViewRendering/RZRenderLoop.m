@@ -17,7 +17,7 @@
 @property (strong, nonatomic) NSInvocation *renderInvocation;
 
 @property (assign, nonatomic, readwrite) CFTimeInterval lastRender;
-@property (assign, nonatomic, readwrite, getter=isRunning) BOOL running;
+@property (assign, nonatomic, readwrite, getter=isRunning, setter=_setRunning:) BOOL running;
 
 @end
 
@@ -34,14 +34,14 @@
     if ( self ) {
         _automaticallyResumeWhenBecomingActive = YES;
         
-        [self setupDisplayLink];
+        [self _setupDisplayLink];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [self teardownDisplayLink];
+    [self _teardownDisplayLink];
 }
 
 - (void)setPreferredFPS:(NSInteger)preferredFPS
@@ -102,18 +102,18 @@
                         
 #pragma mark - private methods
 
-- (void)setupDisplayLink
+- (void)_setupDisplayLink
 {
-    self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(render:)];
+    self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_render:)];
     self.displayLink.paused = YES;
     
     [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_willResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
-- (void)teardownDisplayLink
+- (void)_teardownDisplayLink
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -122,13 +122,13 @@
     self.displayLink = nil;
 }
 
-- (void)setRunning:(BOOL)running
+- (void)_setRunning:(BOOL)running
 {
     _running = running;
     self.displayLink.paused = !running;
 }
 
-- (void)willResignActive:(NSNotification *)notification
+- (void)_willResignActive:(NSNotification *)notification
 {
     if ( self.isRunning ) {
         [self stop];
@@ -136,14 +136,14 @@
     }
 }
 
-- (void)didBecomeActive:(NSNotification *)notification
+- (void)_didBecomeActive:(NSNotification *)notification
 {
     if ( self.pausedWhileInactive && self.automaticallyResumeWhenBecomingActive ) {
         [self run];
     }
 }
 
-- (void)render:(CADisplayLink *)displayLink
+- (void)_render:(CADisplayLink *)displayLink
 {
     CFTimeInterval dt = displayLink.timestamp - self.lastRender;
     

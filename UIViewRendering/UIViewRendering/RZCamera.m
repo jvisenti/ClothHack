@@ -17,7 +17,7 @@
 
 + (instancetype)cameraWithFieldOfView:(float)fov aspectRatio:(float)aspectRatio nearClipping:(float)near farClipping:(float)far
 {
-    return [[[self class] alloc] initWithFieldOfView:fov aspectRatio:aspectRatio nearClipping:near farClipping:far];
+    return [[[self class] alloc] _initWithFieldOfView:fov aspectRatio:aspectRatio nearClipping:near farClipping:far];
 }
 
 - (instancetype)init
@@ -32,7 +32,7 @@
 
 - (void)dealloc
 {
-    [self invalidateProjectionMatrixCache];
+    [self _invalidateProjectionMatrixCache];
 }
 
 - (void)setUp:(GLKVector3)up
@@ -43,25 +43,25 @@
 - (void)setFieldOfView:(float)fieldOfView
 {
     _fieldOfView = fieldOfView;
-    [self invalidateProjectionMatrixCache];
+    [self _invalidateProjectionMatrixCache];
 }
 
 - (void)setAspectRatio:(float)aspectRatio
 {
     _aspectRatio = aspectRatio;
-    [self invalidateProjectionMatrixCache];
+    [self _invalidateProjectionMatrixCache];
 }
 
 - (void)setNear:(float)near
 {
     _near = near;
-    [self invalidateProjectionMatrixCache];
+    [self _invalidateProjectionMatrixCache];
 }
 
 - (void)setFar:(float)far
 {
     _far = far;
-    [self invalidateProjectionMatrixCache];
+    [self _invalidateProjectionMatrixCache];
 }
 
 - (GLKMatrix4)projectionMatrix
@@ -109,7 +109,7 @@
 
 #pragma mark - private methods
 
-- (instancetype)initWithFieldOfView:(float)fov aspectRatio:(float)aspectRatio nearClipping:(float)near farClipping:(float)far
+- (instancetype)_initWithFieldOfView:(float)fov aspectRatio:(float)aspectRatio nearClipping:(float)near farClipping:(float)far
 {
     self = [self init];
     if ( self ) {
@@ -121,7 +121,7 @@
     return self;
 }
 
-- (void)invalidateProjectionMatrixCache
+- (void)_invalidateProjectionMatrixCache
 {
     free(_cachedProjectionMatrix);
     _cachedProjectionMatrix = NULL;
