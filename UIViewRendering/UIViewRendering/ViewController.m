@@ -51,7 +51,7 @@
         
 //        self.effect.lightOffset = GLKVector3Make(0.0f, 1.1f, -3.0f);
         
-        self.effectView = [[RZEffectView alloc] initWithBackingView:self.contentView effect:self.effect dynamicContent:YES];
+        self.effectView = [[RZEffectView alloc] initWithSourceView:self.contentView effect:self.effect dynamicContent:YES];
         self.effectView.backgroundColor = [UIColor blackColor];
         self.effectView.userInteractionEnabled = NO;
         

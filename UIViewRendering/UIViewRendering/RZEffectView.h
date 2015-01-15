@@ -21,7 +21,7 @@
 
 @property (assign, nonatomic, getter=isDynamic) IBInspectable BOOL dynamic;
 
-- (instancetype)initWithBackingView:(UIView *)view effect:(RZEffect *)effect dynamicContent:(BOOL)dynamic;
+- (instancetype)initWithSourceView:(UIView *)view effect:(RZEffect *)effect dynamicContent:(BOOL)dynamic;
 
 - (void)display;
 
@@ -29,6 +29,6 @@
 
 @interface RZEffectView (RZUnavailable)
 
-- (instancetype)initWithFrame:(CGRect)frame __attribute__((unavailable("Use -initWithBackingView: instead.")));
+- (instancetype)initWithFrame:(CGRect)frame __attribute__((unavailable("Use -initWithSourceView: instead.")));
 
 @end

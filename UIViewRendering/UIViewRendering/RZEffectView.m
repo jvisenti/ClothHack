@@ -23,7 +23,7 @@
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) RZRenderLoop *renderLoop;
 
-@property (strong, nonatomic) IBOutlet UIView *backingView;
+@property (strong, nonatomic) IBOutlet UIView *sourceView;
 @property (strong, nonatomic) RZViewTexture *viewTexture;
 @property (strong, nonatomic) RZQuadMesh *viewMesh;
 
@@ -40,11 +40,11 @@
 
 #pragma mark - lifecycle
 
-- (instancetype)initWithBackingView:(UIView *)view effect:(RZEffect *)effect dynamicContent:(BOOL)dynamic
+- (instancetype)initWithSourceView:(UIView *)view effect:(RZEffect *)effect dynamicContent:(BOOL)dynamic
 {
     self = [super initWithFrame:view.bounds];
     if ( self ) {
-        _backingView = view;
+        _sourceView = view;
         _effect = effect;
         _dynamic = dynamic;
         
@@ -267,9 +267,9 @@
 
 - (void)_createTexture
 {
-    if ( self.backingView != nil ) {
+    if ( self.sourceView != nil ) {
         [EAGLContext setCurrentContext:self.context];
-        [self _setViewTexture:[RZViewTexture textureWithSize:self.backingView.bounds.size]];
+        [self _setViewTexture:[RZViewTexture textureWithSize:self.sourceView.bounds.size]];
     }
 }
 
@@ -280,7 +280,7 @@
     [effect setupGL];
     
     if ( [effect link] ) {
-        if ( self.backingView != nil ) {
+        if ( self.sourceView != nil ) {
             [self _setViewMesh:[RZQuadMesh quadWithSubdivisionLevel:effect.preferredLevelOfDetail]];
         }
         
@@ -339,7 +339,7 @@
 - (void)_update:(CFTimeInterval)dt
 {
     if ( self.isDynamic || !self.textureLoaded ) {
-        [self.viewTexture updateWithView:self.backingView synchronous:NO];
+        [self.viewTexture updateWithView:self.sourceView synchronous:NO];
         self.textureLoaded = YES;
     }
 }
